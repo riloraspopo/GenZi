@@ -10,7 +10,15 @@ class DataProvider {
       final files = await AppwriteService.listFiles(mediaBucketId);
       
       final posters = files
-          .where((file) => !file.mimeType.startsWith('application/pdf')) // Filter out PDFs
+          .where((file) => 
+            !file.mimeType.startsWith('application/pdf') && // Filter out PDFs
+            !file.mimeType.toLowerCase().startsWith('video/') && // Filter out videos by MIME type
+            !file.name.toLowerCase().endsWith('.mp4') &&  // Filter out video files by extension
+            !file.name.toLowerCase().endsWith('.mov') &&
+            !file.name.toLowerCase().endsWith('.avi') &&
+            !file.name.toLowerCase().endsWith('.mkv') &&
+            !file.name.toLowerCase().endsWith('.webm')
+          )
           .map((file) => EducationalPoster(
             id: file.$id,
              title: file.name.substring(0, file.name.lastIndexOf('.')),

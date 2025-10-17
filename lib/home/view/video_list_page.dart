@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:appwrite/models.dart' as models;
+import 'package:video_player/video_player.dart';
+import 'package:chewie/chewie.dart';
 import '../../services/appwrite_service.dart';
 
 class VideoListPage extends StatefulWidget {
@@ -420,7 +422,7 @@ class _VideoListPageState extends State<VideoListPage> {
 }
 
 // Simple video player page
-class VideoPlayerPage extends StatelessWidget {
+class VideoPlayerPage extends StatefulWidget {
   final String videoUrl;
   final String title;
 
@@ -431,57 +433,212 @@ class VideoPlayerPage extends StatelessWidget {
   });
 
   @override
+  State<VideoPlayerPage> createState() => _VideoPlayerPageState();
+}
+
+class _VideoPlayerPageState extends State<VideoPlayerPage> {
+  late VideoPlayerController _videoPlayerController;
+  ChewieController? _chewieController;
+  bool _isLoading = true;
+  bool _hasError = false;
+  String _errorMessage = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _initializeVideoPlayer();
+  }
+
+  Future<void> _initializeVideoPlayer() async {
+    try {
+      setState(() {
+        _isLoading = true;
+        _hasError = false;
+      });
+
+      _videoPlayerController = VideoPlayerController.networkUrl(
+        Uri.parse(widget.videoUrl),
+      );
+
+      await _videoPlayerController.initialize();
+
+      _chewieController = ChewieController(
+        videoPlayerController: _videoPlayerController,
+        autoPlay: true,
+        looping: false,
+        allowFullScreen: true,
+        allowMuting: true,
+        showControls: true,
+        materialProgressColors: ChewieProgressColors(
+          playedColor: Colors.purple,
+          handleColor: Colors.purple,
+          backgroundColor: Colors.grey,
+          bufferedColor: Colors.purple.withValues(alpha: 0.3),
+        ),
+        placeholder: Container(
+          color: Colors.black,
+          child: const Center(
+            child: CircularProgressIndicator(
+              color: Colors.purple,
+            ),
+          ),
+        ),
+        errorBuilder: (context, errorMessage) {
+          return Container(
+            color: Colors.black,
+            child: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(
+                    Icons.error_outline,
+                    color: Colors.white,
+                    size: 64,
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    'Error loading video',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    errorMessage,
+                    style: const TextStyle(
+                      color: Colors.white70,
+                      fontSize: 14,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
+      );
+
+      setState(() {
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+        _hasError = true;
+        _errorMessage = e.toString();
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    _chewieController?.dispose();
+    _videoPlayerController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          title,
+          widget.title,
           style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
         ),
-        backgroundColor: Colors.black,
+        backgroundColor: Colors.purple.shade700,
         iconTheme: const IconThemeData(color: Colors.white),
+        elevation: 0,
       ),
       backgroundColor: Colors.black,
-      body: Center(
+      body: _buildBody(),
+    );
+  }
+
+  Widget _buildBody() {
+    if (_isLoading) {
+      return const Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              Icons.play_circle_outline,
-              size: 100,
-                color: Colors.white.withValues(alpha: 0.7),
+            CircularProgressIndicator(
+              color: Colors.purple,
             ),
-            const SizedBox(height: 20),
+            SizedBox(height: 16),
             Text(
-              'Video Player',
+              'Loading video...',
               style: TextStyle(
-              color: Colors.white.withValues(alpha: 0.7),
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
+                color: Colors.white,
+                fontSize: 16,
               ),
             ),
-            const SizedBox(height: 10),
-            Text(
-              'URL: $videoUrl',
-              style: TextStyle(
-                  color: Colors.white.withValues(alpha: 0.5),
-                fontSize: 12,
+          ],
+        ),
+      );
+    }
+
+    if (_hasError) {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(24.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(
+                Icons.error_outline,
+                color: Colors.red,
+                size: 64,
               ),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 20),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 32),
-              child: Text(
-                'Video player akan diimplementasikan dengan Chewie/VideoPlayer package',
+              const SizedBox(height: 16),
+              const Text(
+                'Failed to load video',
                 style: TextStyle(
-                color: Colors.white.withValues(alpha: 0.5),
+                  color: Colors.white,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                _errorMessage,
+                style: const TextStyle(
+                  color: Colors.white70,
                   fontSize: 14,
                 ),
                 textAlign: TextAlign.center,
               ),
-            ),
-          ],
+              const SizedBox(height: 24),
+              ElevatedButton.icon(
+                onPressed: _initializeVideoPlayer,
+                icon: const Icon(Icons.refresh),
+                label: const Text('Retry'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.purple,
+                  foregroundColor: Colors.white,
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    if (_chewieController != null) {
+      return Center(
+        child: AspectRatio(
+          aspectRatio: _videoPlayerController.value.aspectRatio,
+          child: Chewie(controller: _chewieController!),
+        ),
+      );
+    }
+
+    return const Center(
+      child: Text(
+        'No video available',
+        style: TextStyle(
+          color: Colors.white,
+          fontSize: 16,
         ),
       ),
     );
