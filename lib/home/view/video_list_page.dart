@@ -37,11 +37,7 @@ class _VideoListPageState extends State<VideoListPage> {
     await _videosFuture;
   }
 
-  String _getVideoThumbnail(models.File video) {
-    // For now, we'll use the same URL as video URL
-    // In a real implementation, you might want to generate actual thumbnails
-    return AppwriteService.getVideoUrl(widget.bucketId, video.$id);
-  }
+
 
   String _formatFileSize(int bytes) {
     if (bytes < 1024) return '$bytes B';
@@ -122,7 +118,7 @@ class _VideoListPageState extends State<VideoListPage> {
                       child: Container(
                         padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
                         decoration: BoxDecoration(
-                          color: Colors.black.withOpacity(0.7),
+                          color: Colors.black.withValues(alpha: 0.7),
                           borderRadius: BorderRadius.circular(4),
                         ),
                         child: Text(
@@ -140,7 +136,7 @@ class _VideoListPageState extends State<VideoListPage> {
                       width: 40,
                       height: 40,
                       decoration: BoxDecoration(
-                        color: Colors.blue.withOpacity(0.8),
+                        color: Colors.blue.withValues(alpha: 0.8),
                         shape: BoxShape.circle,
                       ),
                       child: const Icon(
@@ -453,13 +449,13 @@ class VideoPlayerPage extends StatelessWidget {
             Icon(
               Icons.play_circle_outline,
               size: 100,
-              color: Colors.white.withOpacity(0.7),
+                color: Colors.white.withValues(alpha: 0.7),
             ),
             const SizedBox(height: 20),
             Text(
               'Video Player',
               style: TextStyle(
-                color: Colors.white.withOpacity(0.7),
+              color: Colors.white.withValues(alpha: 0.7),
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
               ),
@@ -468,7 +464,7 @@ class VideoPlayerPage extends StatelessWidget {
             Text(
               'URL: $videoUrl',
               style: TextStyle(
-                color: Colors.white.withOpacity(0.5),
+                  color: Colors.white.withValues(alpha: 0.5),
                 fontSize: 12,
               ),
               textAlign: TextAlign.center,
@@ -479,7 +475,7 @@ class VideoPlayerPage extends StatelessWidget {
               child: Text(
                 'Video player akan diimplementasikan dengan Chewie/VideoPlayer package',
                 style: TextStyle(
-                  color: Colors.white.withOpacity(0.5),
+                color: Colors.white.withValues(alpha: 0.5),
                   fontSize: 14,
                 ),
                 textAlign: TextAlign.center,

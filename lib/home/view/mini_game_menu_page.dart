@@ -34,7 +34,7 @@ class MiniGameMenuPage extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   const SizedBox(height: 20),
-                  
+
                   // Header
                   const Text(
                     '🎮 Mini Games 🎮',
@@ -44,25 +44,23 @@ class MiniGameMenuPage extends StatelessWidget {
                       color: Colors.purple,
                     ),
                   ),
-                  
+
                   const SizedBox(height: 10),
-                  
+
                   const Text(
                     'Pilih permainan edukatif yang ingin kamu mainkan!',
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Colors.grey,
-                    ),
+                    style: TextStyle(fontSize: 16, color: Colors.grey),
                     textAlign: TextAlign.center,
                   ),
-                  
+
                   const SizedBox(height: 40),
-                  
+
                   // Game 1: Number Guessing
                   _buildGameCard(
                     context: context,
                     title: 'Tebak Angka',
-                    description: 'Asah kemampuan logika dengan menebak angka yang tepat!',
+                    description:
+                        'Asah kemampuan logika dengan menebak angka yang tepat!',
                     icon: '🎯',
                     color: Colors.blue,
                     onTap: () {
@@ -74,14 +72,15 @@ class MiniGameMenuPage extends StatelessWidget {
                       );
                     },
                   ),
-                  
+
                   const SizedBox(height: 20),
-                  
+
                   // Game 2: Nutrition Quiz
                   _buildGameCard(
                     context: context,
                     title: 'Kuis Makanan Bergizi',
-                    description: 'Belajar tentang nutrisi dan makanan sehat dengan kuis interaktif!',
+                    description:
+                        'Belajar tentang nutrisi dan makanan sehat dengan kuis interaktif!',
                     icon: '🥗',
                     color: Colors.green,
                     onTap: () {
@@ -93,14 +92,15 @@ class MiniGameMenuPage extends StatelessWidget {
                       );
                     },
                   ),
-                  
+
                   const SizedBox(height: 20),
-                  
+
                   // Game 3: Food Sorting
                   _buildGameCard(
                     context: context,
                     title: 'Pilah Makanan Sehat',
-                    description: 'Seret dan letakkan makanan ke kategori yang tepat!',
+                    description:
+                        'Seret dan letakkan makanan ke kategori yang tepat!',
                     icon: '🍎',
                     color: Colors.orange,
                     onTap: () {
@@ -112,9 +112,9 @@ class MiniGameMenuPage extends StatelessWidget {
                       );
                     },
                   ),
-                  
+
                   const SizedBox(height: 40),
-                  
+
                   // Footer info
                   Container(
                     padding: const EdgeInsets.all(16),
@@ -145,7 +145,7 @@ class MiniGameMenuPage extends StatelessWidget {
                       ],
                     ),
                   ),
-                  
+
                   const SizedBox(height: 20),
                 ],
               ),
@@ -173,10 +173,10 @@ class MiniGameMenuPage extends StatelessWidget {
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: color.withOpacity(0.3), width: 2),
+          border: Border.all(color: color.withValues(alpha: 0.3), width: 2),
           boxShadow: [
             BoxShadow(
-              color: color.withOpacity(0.1),
+              color: color.withValues(alpha: 0.1),
               spreadRadius: 2,
               blurRadius: 8,
               offset: const Offset(0, 4),
@@ -190,19 +190,16 @@ class MiniGameMenuPage extends StatelessWidget {
               width: 80,
               height: 80,
               decoration: BoxDecoration(
-                color: color.withOpacity(0.1),
+                color: color.withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
               child: Center(
-                child: Text(
-                  icon,
-                  style: const TextStyle(fontSize: 40),
-                ),
+                child: Text(icon, style: const TextStyle(fontSize: 40)),
               ),
             ),
-            
+
             const SizedBox(height: 16),
-            
+
             // Title
             Text(
               title,
@@ -213,21 +210,18 @@ class MiniGameMenuPage extends StatelessWidget {
               ),
               textAlign: TextAlign.center,
             ),
-            
+
             const SizedBox(height: 8),
-            
+
             // Description
             Text(
               description,
-              style: TextStyle(
-                fontSize: 14,
-                color: Colors.grey.shade600,
-              ),
+              style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
               textAlign: TextAlign.center,
             ),
-            
+
             const SizedBox(height: 16),
-            
+
             // Play button
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),

@@ -20,57 +20,65 @@ class _NutritionQuizGameState extends State<NutritionQuizGame> {
       'question': 'Makanan mana yang kaya akan protein?',
       'options': ['Nasi Putih', 'Telur', 'Gula', 'Keripik'],
       'correct': 'Telur',
-      'explanation': 'Telur mengandung protein lengkap yang baik untuk pertumbuhan dan perbaikan sel tubuh.',
-      'emoji': '🥚'
+      'explanation':
+          'Telur mengandung protein lengkap yang baik untuk pertumbuhan dan perbaikan sel tubuh.',
+      'emoji': '🥚',
     },
     {
       'question': 'Vitamin apa yang bisa didapat dari sinar matahari?',
       'options': ['Vitamin A', 'Vitamin B', 'Vitamin C', 'Vitamin D'],
       'correct': 'Vitamin D',
-      'explanation': 'Vitamin D diproduksi oleh tubuh ketika kulit terpapar sinar matahari pagi.',
-      'emoji': '☀️'
+      'explanation':
+          'Vitamin D diproduksi oleh tubuh ketika kulit terpapar sinar matahari pagi.',
+      'emoji': '☀️',
     },
     {
       'question': 'Buah mana yang mengandung vitamin C tinggi?',
       'options': ['Pisang', 'Jeruk', 'Apel', 'Anggur'],
       'correct': 'Jeruk',
-      'explanation': 'Jeruk kaya akan vitamin C yang membantu meningkatkan daya tahan tubuh.',
-      'emoji': '🍊'
+      'explanation':
+          'Jeruk kaya akan vitamin C yang membantu meningkatkan daya tahan tubuh.',
+      'emoji': '🍊',
     },
     {
       'question': 'Sayuran hijau baik untuk tubuh karena mengandung?',
       'options': ['Gula', 'Zat Besi', 'Lemak Trans', 'Pengawet'],
       'correct': 'Zat Besi',
-      'explanation': 'Sayuran hijau seperti bayam mengandung zat besi yang mencegah anemia.',
-      'emoji': '🥬'
+      'explanation':
+          'Sayuran hijau seperti bayam mengandung zat besi yang mencegah anemia.',
+      'emoji': '🥬',
     },
     {
       'question': 'Berapa gelas air yang disarankan diminum per hari?',
       'options': ['2-3 gelas', '4-5 gelas', '8 gelas', '12 gelas'],
       'correct': '8 gelas',
-      'explanation': 'Tubuh memerlukan sekitar 8 gelas air per hari untuk menjaga hidrasi yang optimal.',
-      'emoji': '💧'
+      'explanation':
+          'Tubuh memerlukan sekitar 8 gelas air per hari untuk menjaga hidrasi yang optimal.',
+      'emoji': '💧',
     },
     {
       'question': 'Makanan mana yang sebaiknya dihindari?',
       'options': ['Ikan', 'Sayuran', 'Makanan Cepat Saji', 'Buah-buahan'],
       'correct': 'Makanan Cepat Saji',
-      'explanation': 'Makanan cepat saji tinggi lemak jenuh, garam, dan kalori yang tidak baik untuk kesehatan.',
-      'emoji': '🍟'
+      'explanation':
+          'Makanan cepat saji tinggi lemak jenuh, garam, dan kalori yang tidak baik untuk kesehatan.',
+      'emoji': '🍟',
     },
     {
       'question': 'Karbohidrat sehat bisa didapat dari?',
       'options': ['Nasi Merah', 'Permen', 'Soda', 'Kue Manis'],
       'correct': 'Nasi Merah',
-      'explanation': 'Nasi merah mengandung serat dan nutrisi lebih banyak dibanding nasi putih.',
-      'emoji': '🍙'
+      'explanation':
+          'Nasi merah mengandung serat dan nutrisi lebih banyak dibanding nasi putih.',
+      'emoji': '🍙',
     },
     {
       'question': 'Buah mana yang baik untuk kesehatan mata?',
       'options': ['Wortel', 'Durian', 'Mangga', 'Semua benar'],
       'correct': 'Semua benar',
-      'explanation': 'Wortel, durian, dan mangga mengandung beta karoten yang baik untuk mata.',
-      'emoji': '👁️'
+      'explanation':
+          'Wortel, durian, dan mangga mengandung beta karoten yang baik untuk mata.',
+      'emoji': '👁️',
     },
   ];
 
@@ -169,12 +177,12 @@ class _NutritionQuizGameState extends State<NutritionQuizGame> {
 
   Widget _buildQuizScreen() {
     final question = _questions[_currentQuestionIndex];
-    
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         const SizedBox(height: 20),
-        
+
         // Progress indicator
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -191,9 +199,9 @@ class _NutritionQuizGameState extends State<NutritionQuizGame> {
             ),
           ),
         ),
-        
+
         const SizedBox(height: 20),
-        
+
         // Score
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -210,17 +218,14 @@ class _NutritionQuizGameState extends State<NutritionQuizGame> {
             ),
           ),
         ),
-        
+
         const SizedBox(height: 30),
-        
+
         // Question emoji
-        Text(
-          question['emoji'],
-          style: const TextStyle(fontSize: 80),
-        ),
-        
+        Text(question['emoji'], style: const TextStyle(fontSize: 80)),
+
         const SizedBox(height: 20),
-        
+
         // Question
         Container(
           padding: const EdgeInsets.all(20),
@@ -229,7 +234,7 @@ class _NutritionQuizGameState extends State<NutritionQuizGame> {
             borderRadius: BorderRadius.circular(16),
             boxShadow: [
               BoxShadow(
-                color: Colors.grey.withOpacity(0.2),
+                color: Colors.grey.withValues(alpha: 0.2),
                 spreadRadius: 2,
                 blurRadius: 5,
                 offset: const Offset(0, 3),
@@ -246,19 +251,19 @@ class _NutritionQuizGameState extends State<NutritionQuizGame> {
             textAlign: TextAlign.center,
           ),
         ),
-        
+
         const SizedBox(height: 30),
-        
+
         // Answer options
         ...List.generate(question['options'].length, (index) {
           final option = question['options'][index];
           final isSelected = _selectedAnswer == option;
           final isCorrect = option == question['correct'];
-          
+
           Color buttonColor = Colors.white;
           Color textColor = Colors.black87;
           Color borderColor = Colors.grey.shade300;
-          
+
           if (_hasAnswered) {
             if (isCorrect) {
               buttonColor = Colors.green.shade100;
@@ -274,7 +279,7 @@ class _NutritionQuizGameState extends State<NutritionQuizGame> {
             textColor = Colors.blue.shade800;
             borderColor = Colors.blue;
           }
-          
+
           return Container(
             margin: const EdgeInsets.only(bottom: 12),
             child: InkWell(
@@ -301,9 +306,9 @@ class _NutritionQuizGameState extends State<NutritionQuizGame> {
             ),
           );
         }),
-        
+
         const SizedBox(height: 30),
-        
+
         // Explanation (shown after answer)
         if (_hasAnswered) ...[
           Container(
@@ -329,7 +334,9 @@ class _NutritionQuizGameState extends State<NutritionQuizGame> {
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
-                    color: _isCorrect ? Colors.green.shade800 : Colors.orange.shade800,
+                    color: _isCorrect
+                        ? Colors.green.shade800
+                        : Colors.orange.shade800,
                   ),
                 ),
                 const SizedBox(height: 8),
@@ -337,16 +344,18 @@ class _NutritionQuizGameState extends State<NutritionQuizGame> {
                   question['explanation'],
                   style: TextStyle(
                     fontSize: 14,
-                    color: _isCorrect ? Colors.green.shade700 : Colors.orange.shade700,
+                    color: _isCorrect
+                        ? Colors.green.shade700
+                        : Colors.orange.shade700,
                   ),
                   textAlign: TextAlign.center,
                 ),
               ],
             ),
           ),
-          
+
           const SizedBox(height: 20),
-          
+
           // Next button
           ElevatedButton(
             onPressed: _nextQuestion,
@@ -360,7 +369,9 @@ class _NutritionQuizGameState extends State<NutritionQuizGame> {
               elevation: 3,
             ),
             child: Text(
-              _currentQuestionIndex < _questions.length - 1 ? 'Soal Berikutnya' : 'Lihat Hasil',
+              _currentQuestionIndex < _questions.length - 1
+                  ? 'Soal Berikutnya'
+                  : 'Lihat Hasil',
               style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
           ),
@@ -374,15 +385,19 @@ class _NutritionQuizGameState extends State<NutritionQuizGame> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         const SizedBox(height: 40),
-        
+
         // Result emoji
         Text(
-          _score >= (_questions.length * 0.8) ? '🏆' : _score >= (_questions.length * 0.6) ? '🥈' : '🤗',
+          _score >= (_questions.length * 0.8)
+              ? '🏆'
+              : _score >= (_questions.length * 0.6)
+              ? '🥈'
+              : '🤗',
           style: const TextStyle(fontSize: 100),
         ),
-        
+
         const SizedBox(height: 20),
-        
+
         // Score display
         Container(
           padding: const EdgeInsets.all(24),
@@ -391,7 +406,7 @@ class _NutritionQuizGameState extends State<NutritionQuizGame> {
             borderRadius: BorderRadius.circular(16),
             boxShadow: [
               BoxShadow(
-                color: Colors.grey.withOpacity(0.2),
+                color: Colors.grey.withValues(alpha: 0.2),
                 spreadRadius: 2,
                 blurRadius: 5,
                 offset: const Offset(0, 3),
@@ -402,10 +417,7 @@ class _NutritionQuizGameState extends State<NutritionQuizGame> {
             children: [
               Text(
                 'Skor Akhir',
-                style: TextStyle(
-                  fontSize: 18,
-                  color: Colors.grey.shade600,
-                ),
+                style: TextStyle(fontSize: 18, color: Colors.grey.shade600),
               ),
               const SizedBox(height: 8),
               Text(
@@ -428,14 +440,14 @@ class _NutritionQuizGameState extends State<NutritionQuizGame> {
             ],
           ),
         ),
-        
+
         const SizedBox(height: 30),
-        
+
         // Message
         Container(
           padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
-            color: _getScoreColor().withOpacity(0.1),
+            color: _getScoreColor().withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(12),
             border: Border.all(color: _getScoreColor(), width: 1),
           ),
@@ -449,9 +461,9 @@ class _NutritionQuizGameState extends State<NutritionQuizGame> {
             textAlign: TextAlign.center,
           ),
         ),
-        
+
         const SizedBox(height: 40),
-        
+
         // Play again button
         ElevatedButton(
           onPressed: _restartGame,
@@ -469,9 +481,9 @@ class _NutritionQuizGameState extends State<NutritionQuizGame> {
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
         ),
-        
+
         const SizedBox(height: 40),
-        
+
         // Educational tips
         Container(
           padding: const EdgeInsets.all(16),

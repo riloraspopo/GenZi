@@ -11,7 +11,7 @@ class MiniGamePage extends StatefulWidget {
 class _MiniGamePageState extends State<MiniGamePage> {
   int _targetNumber = 0;
   int _attempts = 0;
-  int _maxAttempts = 7;
+  final int _maxAttempts = 7;
   String _message = '';
   bool _gameWon = false;
   bool _gameLost = false;
@@ -126,7 +126,7 @@ class _MiniGamePageState extends State<MiniGamePage> {
                       borderRadius: BorderRadius.circular(12),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.grey.withOpacity(0.2),
+                          color: Colors.grey.withValues(alpha: 0.2),
                           spreadRadius: 2,
                           blurRadius: 5,
                           offset: const Offset(0, 3),
@@ -183,7 +183,7 @@ class _MiniGamePageState extends State<MiniGamePage> {
                           borderRadius: BorderRadius.circular(12),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.grey.withOpacity(0.2),
+                              color: Colors.grey.withValues(alpha: 0.2),
                               spreadRadius: 1,
                               blurRadius: 3,
                               offset: const Offset(0, 2),

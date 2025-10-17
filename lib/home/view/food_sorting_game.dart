@@ -31,8 +31,8 @@ class _FoodSortingGameState extends State<FoodSortingGame> {
   ];
 
   List<Map<String, dynamic>> _availableFoods = [];
-  List<Map<String, dynamic>> _healthyFoods = [];
-  List<Map<String, dynamic>> _unhealthyFoods = [];
+  final List<Map<String, dynamic>> _healthyFoods = [];
+  final List<Map<String, dynamic>> _unhealthyFoods = [];
 
   @override
   void initState() {
@@ -160,7 +160,7 @@ class _FoodSortingGameState extends State<FoodSortingGame> {
               borderRadius: BorderRadius.circular(12),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.grey.withOpacity(0.2),
+                  color: Colors.grey.withValues(alpha: 0.2),
                   spreadRadius: 2,
                   blurRadius: 5,
                   offset: const Offset(0, 3),
@@ -221,7 +221,7 @@ class _FoodSortingGameState extends State<FoodSortingGame> {
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: _feedbackColor.withOpacity(0.1),
+                color: _feedbackColor.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(8),
                 border: Border.all(color: _feedbackColor, width: 1),
               ),
@@ -246,7 +246,7 @@ class _FoodSortingGameState extends State<FoodSortingGame> {
                 // Healthy foods zone
                 Expanded(
                   child: DragTarget<Map<String, dynamic>>(
-                    onAccept: (food) => _dropFood(true, food),
+                    onAcceptWithDetails: (details) => _dropFood(true, details.data),
                     builder: (context, candidateData, rejectedData) {
                       return Container(
                         margin: const EdgeInsets.only(right: 8),
@@ -317,7 +317,7 @@ class _FoodSortingGameState extends State<FoodSortingGame> {
                 // Unhealthy foods zone
                 Expanded(
                   child: DragTarget<Map<String, dynamic>>(
-                    onAccept: (food) => _dropFood(false, food),
+                    onAcceptWithDetails: (details) => _dropFood(false, details.data),
                     builder: (context, candidateData, rejectedData) {
                       return Container(
                         margin: const EdgeInsets.only(left: 8),
@@ -399,7 +399,7 @@ class _FoodSortingGameState extends State<FoodSortingGame> {
               borderRadius: BorderRadius.circular(12),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.grey.withOpacity(0.2),
+                  color: Colors.grey.withValues(alpha: 0.2),
                   spreadRadius: 2,
                   blurRadius: 5,
                   offset: const Offset(0, 3),
@@ -547,7 +547,7 @@ class _FoodSortingGameState extends State<FoodSortingGame> {
                 borderRadius: BorderRadius.circular(16),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.grey.withOpacity(0.2),
+                    color: Colors.grey.withValues(alpha: 0.2),
                     spreadRadius: 2,
                     blurRadius: 8,
                     offset: const Offset(0, 4),
@@ -592,7 +592,7 @@ class _FoodSortingGameState extends State<FoodSortingGame> {
             Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: _getCompletionColor().withOpacity(0.1),
+                color: _getCompletionColor().withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(color: _getCompletionColor(), width: 1),
               ),
