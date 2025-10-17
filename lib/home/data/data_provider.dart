@@ -61,33 +61,33 @@ class DataProvider {
     return [
       InformationItem(
         id: '1',
-        title: 'Memory Techniques',
-        content: '''Master these proven memory techniques to enhance your learning:
-• Active Recall: Test yourself frequently
-• Spaced Repetition: Review material at increasing intervals
-• Mind Mapping: Create visual connections
-• Chunking: Break information into manageable parts
-• Teaching Others: Explain concepts to reinforce understanding''',
+        title: 'Teknik Mengingat',
+        content: '''Kuasai teknik mengingat yang terbukti untuk meningkatkan pembelajaran:
+• Mengingat Aktif: Uji diri sendiri secara berkala
+• Pengulangan Berjarak: Tinjau materi dengan interval yang meningkat
+• Peta Pikiran: Buat koneksi visual
+• Pemecahan: Bagi informasi menjadi bagian yang mudah dikelola
+• Mengajar Orang Lain: Jelaskan konsep untuk memperkuat pemahaman''',
       ),
       InformationItem(
         id: '2',
-        title: 'Time Management',
-        content: '''Effective time management strategies for students:
-• Use a digital calendar for scheduling
-• Break tasks into 25-minute focused sessions
-• Prioritize tasks using the Eisenhower Matrix
-• Create daily and weekly study schedules
-• Set specific, achievable goals''',
+        title: 'Manajemen Waktu',
+        content: '''Strategi manajemen waktu yang efektif untuk siswa:
+• Gunakan kalender digital untuk penjadwalan
+• Bagi tugas menjadi sesi fokus 25 menit
+• Prioritaskan tugas menggunakan Matriks Eisenhower
+• Buat jadwal belajar harian dan mingguan
+• Tetapkan tujuan yang spesifik dan dapat dicapai''',
       ),
       InformationItem(
         id: '3',
-        title: 'Note-Taking Methods',
-        content: '''Improve your note-taking with these methods:
-• Cornell Method: Divide page into sections
-• Mind Mapping: Create visual connections
-• Outline Method: Organize with headings
-• Flowchart Method: Show process flows
-• Digital Tools: Use apps for organization''',
+        title: 'Metode Mencatat',
+        content: '''Tingkatkan cara mencatat dengan metode ini:
+• Metode Cornell: Bagi halaman menjadi beberapa bagian
+• Peta Pikiran: Buat koneksi visual
+• Metode Outline: Atur dengan judul
+• Metode Flowchart: Tunjukkan alur proses
+• Alat Digital: Gunakan aplikasi untuk organisasi''',
       ),
     ];
   }

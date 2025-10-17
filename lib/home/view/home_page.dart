@@ -7,6 +7,8 @@ import 'package:myapp/home/data/data_provider.dart';
 import 'package:myapp/home/models/educational_content.dart';
 import 'package:myapp/home/view/full_screen_image_viewer.dart';
 import 'package:myapp/home/view/pdf_viewer_page.dart';
+import 'package:myapp/home/view/mini_game_menu_page.dart';
+import 'package:myapp/home/view/video_list_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -87,10 +89,10 @@ class _HomePageState extends State<HomePage> {
       // Show error snackbar
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Error refreshing data: ${e.toString()}'),
+          content: Text('Kesalahan memuat ulang data: ${e.toString()}'),
           behavior: SnackBarBehavior.floating,
           action: SnackBarAction(
-            label: 'Retry',
+            label: 'Coba Lagi',
             onPressed: () {
               _refreshIndicatorKey.currentState?.show();
             },
@@ -177,11 +179,11 @@ class _HomePageState extends State<HomePage> {
                                 Icon(
                                   Icons.error_outline,
                                   size: 50,
-                                  color: Colors.grey.shade400,
-                                ),
-                                const SizedBox(height: 8),
-                                Text(
-                                  'Image Error',
+                                          color: Colors.grey.shade400,
+                                        ),
+                                        const SizedBox(height: 8),
+                                        Text(
+                                          'Kesalahan Gambar',
                                   style: TextStyle(
                                     color: Colors.grey.shade600,
                                     fontSize: 12,
@@ -226,7 +228,7 @@ class _HomePageState extends State<HomePage> {
       child: Scaffold(
         appBar: AppBar(
           title: const Text(
-            'Educational Resources',
+            'Sumber Daya Edukasi',
             style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
           ),
           backgroundColor: Colors.blue.shade700,
@@ -268,18 +270,18 @@ class _HomePageState extends State<HomePage> {
                       Center(
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
-                          children: const [
-                            Text(
-                              'Welcome to',
+                          children: [
+                            const Text(
+                              'Selamat datang di',
                               style: TextStyle(
                                 fontSize: 20,
                                 color: Colors.white70,
                                 fontWeight: FontWeight.w500,
                               ),
                             ),
-                            SizedBox(height: 8),
-                            Text(
-                              'Learning Hub',
+                            const SizedBox(height: 8),
+                            const Text(
+                              'Hub Pembelajaran',
                               style: TextStyle(
                                 fontSize: 32,
                                 color: Colors.white,
@@ -287,13 +289,47 @@ class _HomePageState extends State<HomePage> {
                                 letterSpacing: 1.2,
                               ),
                             ),
-                            SizedBox(height: 16),
-                            Text(
-                              'Explore • Learn • Grow',
+                            const SizedBox(height: 16),
+                            const Text(
+                              'Jelajahi • Belajar • Berkembang',
                               style: TextStyle(
                                 fontSize: 16,
                                 color: Colors.white70,
                                 letterSpacing: 2,
+                              ),
+                            ),
+                            const SizedBox(height: 24),
+                            ElevatedButton.icon(
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => const MiniGameMenuPage(),
+                                  ),
+                                );
+                              },
+                              icon: const Icon(
+                                Icons.casino,
+                                color: Colors.blue,
+                              ),
+                              label: const Text(
+                                'Main Mini Game',
+                                style: TextStyle(
+                                  color: Colors.blue,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.white,
+                                foregroundColor: Colors.blue.shade700,
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 24,
+                                  vertical: 12,
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(25),
+                                ),
+                                elevation: 3,
                               ),
                             ),
                           ],
@@ -310,7 +346,7 @@ class _HomePageState extends State<HomePage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const Text(
-                        'Educational Posters',
+                        'Poster Edukasi',
                         style: TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
@@ -329,7 +365,7 @@ class _HomePageState extends State<HomePage> {
 
                           if (snapshot.hasError) {
                             return Center(
-                              child: Text('Error: ${snapshot.error}'),
+                              child: Text('Kesalahan: ${snapshot.error}'),
                             );
                           }
 
@@ -396,177 +432,298 @@ class _HomePageState extends State<HomePage> {
                           );
                         },
                       ),
+                    ],
+                  ),
+                ),
 
-                      // PDF Resources Section
-                      Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Text(
-                              'PDF Resources',
-                              style: TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            const SizedBox(height: 16),
-                            FutureBuilder<List<PdfResource>>(
-                              future: _pdfResourcesFuture,
-                              builder: (context, snapshot) {
-                                if (snapshot.connectionState ==
-                                    ConnectionState.waiting) {
-                                  return const Center(
-                                    child: CircularProgressIndicator(),
-                                  );
-                                }
-
-                                if (snapshot.hasError) {
-                                  return Center(
-                                    child: Text('Error: ${snapshot.error}'),
-                                  );
-                                }
-
-                                final pdfResources = snapshot.data ?? [];
-
-                                return SizedBox(
-                                  height: 160,
-                                  child: ListView.builder(
-                                    scrollDirection: Axis.horizontal,
-                                    itemCount: pdfResources.length,
-                                    itemBuilder: (context, index) {
-                                      final pdf = pdfResources[index];
-                                      return Padding(
-                                        padding: const EdgeInsets.only(
-                                          right: 16,
-                                        ),
-                                        child: SizedBox(
-                                          width: 120,
-                                          child: GestureDetector(
-                                            onTap: () {
-                                              Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      PdfViewerPage(
-                                                        pdfUrl: pdf.pdfUrl,
-                                                        title: pdf.title,
-                                                      ),
-                                                ),
-                                              );
-                                            },
-                                            child: Card(
-                                              elevation: 2,
-                                              shape: RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(12),
-                                              ),
-                                              child: Column(
-                                                children: [
-                                                  Expanded(
-                                                    child: Container(
-                                                      color:
-                                                          Colors.red.shade100,
-                                                      child: Center(
-                                                        child: Icon(
-                                                          Icons.picture_as_pdf,
-                                                          size: 40,
-                                                          color: Colors
-                                                              .red
-                                                              .shade400,
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  ),
-                                                  Padding(
-                                                    padding:
-                                                        const EdgeInsets.all(
-                                                          8.0,
-                                                        ),
-                                                    child: Text(
-                                                      pdf.title,
-                                                      textAlign:
-                                                          TextAlign.center,
-                                                      style: const TextStyle(
-                                                        fontWeight:
-                                                            FontWeight.bold,
-                                                      ),
-                                                      maxLines: 2,
-                                                      overflow:
-                                                          TextOverflow.ellipsis,
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      );
-                                    },
-                                  ),
-                                );
-                              },
-                            ),
-                          ],
+                // PDF Resources Section
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Sumber Daya PDF',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
+                      const SizedBox(height: 16),
+                      FutureBuilder<List<PdfResource>>(
+                        future: _pdfResourcesFuture,
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return const Center(
+                              child: CircularProgressIndicator(),
+                            );
+                          }
 
-                      // Information Section
-                      Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Text(
-                              'Information',
-                              style: TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            const SizedBox(height: 16),
-                            ListView.builder(
-                              shrinkWrap: true,
-                              physics: const NeverScrollableScrollPhysics(),
-                              itemCount:
-                                  DataProvider.getInformationItems().length,
+                          if (snapshot.hasError) {
+                            return Center(
+                              child: Text('Kesalahan: ${snapshot.error}'),
+                            );
+                          }
+
+                          final pdfResources = snapshot.data ?? [];
+
+                          return SizedBox(
+                            height: 160,
+                            child: ListView.builder(
+                              scrollDirection: Axis.horizontal,
+                              itemCount: pdfResources.length,
                               itemBuilder: (context, index) {
-                                final info =
-                                    DataProvider.getInformationItems()[index];
-                                return Card(
-                                  margin: const EdgeInsets.only(bottom: 16),
-                                  elevation: 2,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(12),
+                                final pdf = pdfResources[index];
+                                return Padding(
+                                  padding: const EdgeInsets.only(
+                                    right: 16,
                                   ),
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(16.0),
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          info.title,
-                                          style: const TextStyle(
-                                            fontSize: 18,
-                                            fontWeight: FontWeight.bold,
+                                  child: SizedBox(
+                                    width: 120,
+                                    child: GestureDetector(
+                                      onTap: () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                PdfViewerPage(
+                                                  pdfUrl: pdf.pdfUrl,
+                                                  title: pdf.title,
+                                                ),
                                           ),
+                                        );
+                                      },
+                                      child: Card(
+                                        elevation: 2,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(12),
                                         ),
-                                        const SizedBox(height: 8),
-                                        Text(
-                                          info.content,
-                                          style: TextStyle(
-                                            color: Colors.grey.shade700,
-                                          ),
+                                        child: Column(
+                                          children: [
+                                            Expanded(
+                                              child: Container(
+                                                color:
+                                                    Colors.red.shade100,
+                                                child: Center(
+                                                  child: Icon(
+                                                    Icons.picture_as_pdf,
+                                                    size: 40,
+                                                    color: Colors
+                                                        .red
+                                                        .shade400,
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                            Padding(
+                                              padding:
+                                                  const EdgeInsets.all(
+                                                    8.0,
+                                                  ),
+                                              child: Text(
+                                                pdf.title,
+                                                textAlign:
+                                                    TextAlign.center,
+                                                style: const TextStyle(
+                                                  fontWeight:
+                                                      FontWeight.bold,
+                                                ),
+                                                maxLines: 2,
+                                                overflow:
+                                                    TextOverflow.ellipsis,
+                                              ),
+                                            ),
+                                          ],
                                         ),
-                                      ],
+                                      ),
                                     ),
                                   ),
                                 );
                               },
                             ),
-                          ],
+                          );
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+
+                // Video Learning Section
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Text(
+                            'Video Pembelajaran',
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          TextButton(
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const VideoListPage(
+                                    bucketId: DataProvider.mediaBucketId,
+                                  ),
+                                ),
+                              );
+                            },
+                            child: Text(
+                              'Lihat Semua',
+                              style: TextStyle(
+                                color: Colors.blue.shade700,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const VideoListPage(
+                                bucketId: DataProvider.mediaBucketId,
+                              ),
+                            ),
+                          );
+                        },
+                        child: Card(
+                          elevation: 4,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          child: Container(
+                            height: 120,
+                            padding: const EdgeInsets.all(16),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(16),
+                              gradient: LinearGradient(
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                                colors: [
+                                  Colors.purple.shade400,
+                                  Colors.purple.shade600,
+                                ],
+                              ),
+                            ),
+                            child: Row(
+                              children: [
+                                Container(
+                                  width: 80,
+                                  height: 80,
+                                  decoration: BoxDecoration(
+                                    color: Colors.white.withAlpha(51),
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  child: const Icon(
+                                    Icons.play_circle_filled,
+                                    size: 40,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                                const SizedBox(width: 16),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      const Text(
+                                        'Video Pembelajaran',
+                                        style: TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 8),
+                                      Text(
+                                        'Tonton video edukasi interaktif',
+                                        style: TextStyle(
+                                          fontSize: 14,
+                                          color: Colors.white.withAlpha(204),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                Icon(
+                                  Icons.arrow_forward_ios,
+                                  color: Colors.white.withAlpha(204),
+                                ),
+                              ],
+                            ),
+                          ),
                         ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                // Information Section
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Informasi',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      ListView.builder(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemCount:
+                            DataProvider.getInformationItems().length,
+                        itemBuilder: (context, index) {
+                          final info =
+                              DataProvider.getInformationItems()[index];
+                          return Card(
+                            margin: const EdgeInsets.only(bottom: 16),
+                            elevation: 2,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.all(16.0),
+                              child: Column(
+                                crossAxisAlignment:
+                                    CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    info.title,
+                                    style: const TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Text(
+                                    info.content,
+                                    style: TextStyle(
+                                      color: Colors.grey.shade700,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        },
                       ),
                     ],
                   ),
