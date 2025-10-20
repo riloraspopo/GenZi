@@ -24,10 +24,11 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   final ScrollController _postersScrollController = ScrollController();
   final ScrollController _mainScrollController = ScrollController();
   double _scrollPercent = 0.0;
+  bool _showTitle = false;
   final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
       GlobalKey<RefreshIndicatorState>();
   Key _postersListKey = UniqueKey();
-  
+
   late AnimationController _greetingAnimationController;
   late AnimationController _cardAnimationController;
   late Animation<double> _greetingFadeAnimation;
@@ -37,60 +38,59 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-    
+
     // Initialize animations
     _greetingAnimationController = AnimationController(
       duration: const Duration(milliseconds: 1200),
       vsync: this,
     );
-    
+
     _cardAnimationController = AnimationController(
       duration: const Duration(milliseconds: 800),
       vsync: this,
     );
-    
-    _greetingFadeAnimation = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _greetingAnimationController,
-      curve: Curves.easeOutQuart,
-    ));
-    
-    _greetingSlideAnimation = Tween<Offset>(
-      begin: const Offset(0, 0.3),
-      end: Offset.zero,
-    ).animate(CurvedAnimation(
-      parent: _greetingAnimationController,
-      curve: Curves.easeOutQuart,
-    ));
-    
-    _cardScaleAnimation = Tween<double>(
-      begin: 0.8,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _cardAnimationController,
-      curve: Curves.elasticOut,
-    ));
-    
+
+    _greetingFadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _greetingAnimationController,
+        curve: Curves.easeOutQuart,
+      ),
+    );
+
+    _greetingSlideAnimation =
+        Tween<Offset>(begin: const Offset(0, 0.3), end: Offset.zero).animate(
+          CurvedAnimation(
+            parent: _greetingAnimationController,
+            curve: Curves.easeOutQuart,
+          ),
+        );
+
+    _cardScaleAnimation = Tween<double>(begin: 0.8, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _cardAnimationController,
+        curve: Curves.elasticOut,
+      ),
+    );
+
     // Start animations
     _greetingAnimationController.forward();
     Future.delayed(const Duration(milliseconds: 300), () {
       _cardAnimationController.forward();
     });
-    
+
     // Ensure system UI is visible
     SystemChrome.setEnabledSystemUIMode(
       SystemUiMode.edgeToEdge,
       overlays: [SystemUiOverlay.top, SystemUiOverlay.bottom],
     );
     _postersScrollController.addListener(_updateScrollPercent);
-    
+    _mainScrollController.addListener(_updateTitleVisibility);
+
     // Initialize data loading
     _postersFuture = DataProvider.getPosters();
     _pdfResourcesFuture = DataProvider.getPdfResources();
     _videoCountFuture = DataProvider.getVideoCount();
-    
+
     _refreshData();
   }
 
@@ -113,6 +113,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       }
       setState(() {
         _scrollPercent = 0.0;
+        setState(() {}); // Trigger rebuild for AppBar title visibility
       });
 
       // Clear all caches
@@ -181,9 +182,18 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     }
   }
 
+  void _updateTitleVisibility() {
+    if (_mainScrollController.hasClients) {
+      setState(() {
+        _showTitle = _mainScrollController.offset > 100;
+      });
+    }
+  }
+
   @override
   void dispose() {
     _postersScrollController.dispose();
+    _mainScrollController.removeListener(_updateTitleVisibility);
     _mainScrollController.dispose();
     _greetingAnimationController.dispose();
     _cardAnimationController.dispose();
@@ -233,11 +243,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                         color: Colors.white.withValues(alpha: 0.2),
                         borderRadius: BorderRadius.circular(15),
                       ),
-                      child: Icon(
-                        icon,
-                        size: 30,
-                        color: Colors.white,
-                      ),
+                      child: Icon(icon, size: 30, color: Colors.white),
                     ),
                     const SizedBox(width: 16),
                     Expanded(
@@ -316,11 +322,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                       color: color.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(10),
                     ),
-                    child: Icon(
-                      icon,
-                      size: 20,
-                      color: color,
-                    ),
+                    child: Icon(icon, size: 20, color: color),
                   ),
                   const SizedBox(height: 8),
                   Text(
@@ -471,6 +473,37 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                 floating: false,
                 pinned: true,
                 backgroundColor: Colors.deepPurple,
+                title: AnimatedOpacity(
+                  duration: Duration(milliseconds: 300),
+                  opacity: _showTitle ? 1.0 : 0.0,
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 50,
+                        height: 50,
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withValues(alpha: 0.15),
+                          shape: BoxShape.circle,
+                        ),
+                        child: Image.asset(
+                          'assets/sigizi.png',
+                          fit: BoxFit.contain,
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8),
+                        child: Text(
+                          'Si Gizi',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
                 flexibleSpace: FlexibleSpaceBar(
                   background: Container(
                     decoration: BoxDecoration(
@@ -531,7 +564,9 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                         height: 60,
                                         padding: const EdgeInsets.all(8),
                                         decoration: BoxDecoration(
-                                          color: Colors.white.withValues(alpha: 0.15),
+                                          color: Colors.white.withValues(
+                                            alpha: 0.15,
+                                          ),
                                           shape: BoxShape.circle,
                                         ),
                                         child: Image.asset(
@@ -542,7 +577,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                       const SizedBox(width: 16),
                                       Expanded(
                                         child: Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
                                           children: [
                                             Text(
                                               _getGreeting(),
@@ -569,94 +605,112 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                   Row(
                                     children: [
                                       Expanded(
-                                        child: FutureBuilder<List<EducationalPoster>>(
-                                          future: _postersFuture,
+                                        child:
+                                            FutureBuilder<
+                                              List<EducationalPoster>
+                                            >(
+                                              future: _postersFuture,
+                                              builder: (context, snapshot) {
+                                                return _buildStatsCard(
+                                                  title: 'Poster\nTersedia',
+                                                  value:
+                                                      '${snapshot.data?.length ?? 0}',
+                                                  icon: Icons.image_rounded,
+                                                  color: Colors.orange,
+                                                  onTap: () {
+                                                    // Scroll to posters section
+                                                    _mainScrollController
+                                                        .animateTo(
+                                                          650,
+                                                          duration:
+                                                              const Duration(
+                                                                milliseconds:
+                                                                    800,
+                                                              ),
+                                                          curve:
+                                                              Curves.easeInOut,
+                                                        );
+                                                  },
+                                                );
+                                              },
+                                            ),
+                                      ),
+                                      const SizedBox(width: 12),
+                                      Expanded(
+                                        child: FutureBuilder<List<PdfResource>>(
+                                          future: _pdfResourcesFuture,
                                           builder: (context, snapshot) {
                                             return _buildStatsCard(
-                                              title: 'Poster\nTersedia',
-                                              value: '${snapshot.data?.length ?? 0}',
-                                              icon: Icons.image_rounded,
-                                              color: Colors.orange,
-                                               onTap: () {
-                                                 // Scroll to posters section
-                                                 _mainScrollController.animateTo(
-                                                   650,
-                                                   duration: const Duration(milliseconds: 800),
-                                                   curve: Curves.easeInOut,
-                                                 );
-                                               },
+                                              title: 'Dokumen\nPDF',
+                                              value:
+                                                  '${snapshot.data?.length ?? 0}',
+                                              icon: Icons.description_rounded,
+                                              color: Colors.red,
+                                              onTap: () {
+                                                // Scroll to PDF section
+                                                _mainScrollController.animateTo(
+                                                  1050,
+                                                  duration: const Duration(
+                                                    milliseconds: 800,
+                                                  ),
+                                                  curve: Curves.easeInOut,
+                                                );
+                                              },
                                             );
                                           },
                                         ),
                                       ),
                                       const SizedBox(width: 12),
-                                       Expanded(
-                                         child: FutureBuilder<List<PdfResource>>(
-                                           future: _pdfResourcesFuture,
-                                           builder: (context, snapshot) {
-                                             return _buildStatsCard(
-                                               title: 'Dokumen\nPDF',
-                                               value: '${snapshot.data?.length ?? 0}',
-                                               icon: Icons.description_rounded,
-                                               color: Colors.red,
-                                                onTap: () {
-                                                  // Scroll to PDF section
-                                                  _mainScrollController.animateTo(
-                                                    1050,
-                                                    duration: const Duration(milliseconds: 800),
-                                                    curve: Curves.easeInOut,
-                                                  );
-                                                },
-                                             );
-                                           },
-                                         ),
-                                       ),
+                                      Expanded(
+                                        child: FutureBuilder<int>(
+                                          future: _videoCountFuture,
+                                          builder: (context, snapshot) {
+                                            if (kDebugMode) {
+                                              print(
+                                                'Video count snapshot: ${snapshot.connectionState}, data: ${snapshot.data}, error: ${snapshot.error}',
+                                              );
+                                            }
+                                            return _buildStatsCard(
+                                              title: 'Video\nBelajar',
+                                              value: '${snapshot.data ?? 0}',
+                                              icon: Icons.play_circle_rounded,
+                                              color: Colors.blue,
+                                              onTap: () {
+                                                // Navigate to video list page
+                                                Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        const VideoListPage(
+                                                          bucketId: DataProvider
+                                                              .mediaBucketId,
+                                                        ),
+                                                  ),
+                                                );
+                                              },
+                                            );
+                                          },
+                                        ),
+                                      ),
                                       const SizedBox(width: 12),
-                                       Expanded(
-                                         child: FutureBuilder<int>(
-                                           future: _videoCountFuture,
-                                           builder: (context, snapshot) {
-                                             if (kDebugMode) {
-                                               print('Video count snapshot: ${snapshot.connectionState}, data: ${snapshot.data}, error: ${snapshot.error}');
-                                             }
-                                             return _buildStatsCard(
-                                               title: 'Video\nBelajar',
-                                               value: '${snapshot.data ?? 0}',
-                                               icon: Icons.play_circle_rounded,
-                                               color: Colors.blue,
-                                               onTap: () {
-                                                 // Navigate to video list page
-                                                 Navigator.push(
-                                                   context,
-                                                   MaterialPageRoute(
-                                                     builder: (context) => const VideoListPage(
-                                                       bucketId: DataProvider.mediaBucketId,
-                                                     ),
-                                                   ),
-                                                 );
-                                               },
-                                             );
-                                           },
-                                         ),
-                                       ),
-                                      const SizedBox(width: 12),
-                                       Expanded(
-                                         child: _buildStatsCard(
-                                           title: 'Mini\nGames',
-                                           value: '3',
-                                           icon: Icons.games_rounded,
-                                           color: Colors.green,
-                                           onTap: () {
-                                             // Navigate to mini game menu page
-                                             Navigator.push(
-                                               context,
-                                               MaterialPageRoute(
-                                                 builder: (context) => const MiniGameMenuPage(),
-                                               ),
-                                             );
-                                           },
-                                         ),
-                                       ),
+                                      Expanded(
+                                        child: _buildStatsCard(
+                                          title: 'Mini\nGames',
+                                          value: '3',
+                                          icon: Icons.games_rounded,
+                                          color: Colors.green,
+                                          onTap: () {
+                                            // Navigate to mini game menu page
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) =>
+                                                    const MiniGameMenuPage(),
+                                              ),
+                                            );
+                                          },
+                                        ),
+                                      ),
                                     ],
                                   ),
                                 ],
@@ -669,7 +723,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                   ),
                 ),
               ),
-              
+
               // Quick Actions Section
               SliverToBoxAdapter(
                 child: Padding(
@@ -760,7 +814,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                       FutureBuilder<List<EducationalPoster>>(
                         future: _postersFuture,
                         builder: (context, snapshot) {
-                          if (snapshot.connectionState == ConnectionState.waiting) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
                             return SizedBox(
                               height: 320,
                               child: ListView.builder(
@@ -776,7 +831,9 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                       child: Card(
                                         elevation: 4,
                                         shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(20),
+                                          borderRadius: BorderRadius.circular(
+                                            20,
+                                          ),
                                         ),
                                         child: Container(),
                                       ),
@@ -867,7 +924,9 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                   key: _postersListKey,
                                   controller: _postersScrollController,
                                   scrollDirection: Axis.horizontal,
-                                  padding: const EdgeInsets.symmetric(vertical: 8),
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 8,
+                                  ),
                                   itemCount: posters.length,
                                   itemBuilder: (context, index) {
                                     final poster = posters[index];
@@ -876,7 +935,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                         CachedNetworkImageProvider(
                                           posters[index + 1].imageUrl,
                                           headers: const {
-                                            'X-Requested-With': 'XMLHttpRequest',
+                                            'X-Requested-With':
+                                                'XMLHttpRequest',
                                           },
                                         ),
                                         context,
@@ -919,7 +979,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                       FutureBuilder<List<PdfResource>>(
                         future: _pdfResourcesFuture,
                         builder: (context, snapshot) {
-                          if (snapshot.connectionState == ConnectionState.waiting) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
                             return SizedBox(
                               height: 160,
                               child: ListView.builder(
@@ -935,7 +996,9 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                       child: Card(
                                         elevation: 2,
                                         shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(12),
+                                          borderRadius: BorderRadius.circular(
+                                            12,
+                                          ),
                                         ),
                                         child: Container(),
                                       ),
@@ -982,7 +1045,9 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                       child: Card(
                                         elevation: 4,
                                         shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(16),
+                                          borderRadius: BorderRadius.circular(
+                                            16,
+                                          ),
                                         ),
                                         child: Column(
                                           children: [
@@ -990,13 +1055,17 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                               child: Container(
                                                 decoration: BoxDecoration(
                                                   color: Colors.red.shade50,
-                                                  borderRadius: const BorderRadius.vertical(
-                                                    top: Radius.circular(16),
-                                                  ),
+                                                  borderRadius:
+                                                      const BorderRadius.vertical(
+                                                        top: Radius.circular(
+                                                          16,
+                                                        ),
+                                                      ),
                                                 ),
                                                 child: Center(
                                                   child: Icon(
-                                                    Icons.picture_as_pdf_rounded,
+                                                    Icons
+                                                        .picture_as_pdf_rounded,
                                                     size: 40,
                                                     color: Colors.red.shade400,
                                                   ),
@@ -1004,7 +1073,9 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                               ),
                                             ),
                                             Padding(
-                                              padding: const EdgeInsets.all(12.0),
+                                              padding: const EdgeInsets.all(
+                                                12.0,
+                                              ),
                                               child: Text(
                                                 pdf.title,
                                                 textAlign: TextAlign.center,
@@ -1053,7 +1124,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                         physics: const NeverScrollableScrollPhysics(),
                         itemCount: DataProvider.getInformationItems().length,
                         itemBuilder: (context, index) {
-                          final info = DataProvider.getInformationItems()[index];
+                          final info =
+                              DataProvider.getInformationItems()[index];
                           return AnimatedBuilder(
                             animation: _cardScaleAnimation,
                             builder: (context, child) {
@@ -1068,7 +1140,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                   child: Padding(
                                     padding: const EdgeInsets.all(20.0),
                                     child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
                                         Row(
                                           children: [
@@ -1076,12 +1149,15 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                               width: 40,
                                               height: 40,
                                               decoration: BoxDecoration(
-                                                color: Colors.deepPurple.withValues(alpha: 0.1),
-                                                borderRadius: BorderRadius.circular(10),
+                                                color: Colors.deepPurple
+                                                    .withValues(alpha: 0.1),
+                                                borderRadius:
+                                                    BorderRadius.circular(10),
                                               ),
                                               child: Icon(
                                                 Icons.lightbulb_rounded,
-                                                color: Colors.deepPurple.shade600,
+                                                color:
+                                                    Colors.deepPurple.shade600,
                                                 size: 20,
                                               ),
                                             ),
@@ -1122,9 +1198,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
               ),
 
               // Bottom spacing
-              const SliverToBoxAdapter(
-                child: SizedBox(height: 24),
-              ),
+              const SliverToBoxAdapter(child: SizedBox(height: 24)),
             ],
           ),
         ),
