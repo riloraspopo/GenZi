@@ -65,6 +65,37 @@ class DataProvider {
     }
   }
 
+  static Future<int> getVideoCount() async {
+    try {
+      final files = await AppwriteService.listFiles(mediaBucketId);
+      
+      final videoFiles = files
+          .where((file) => 
+            file.mimeType.toLowerCase().startsWith('video/') || // Filter videos by MIME type
+            file.name.toLowerCase().endsWith('.mp4') ||  // Filter video files by extension
+            file.name.toLowerCase().endsWith('.mov') ||
+            file.name.toLowerCase().endsWith('.avi') ||
+            file.name.toLowerCase().endsWith('.mkv') ||
+            file.name.toLowerCase().endsWith('.webm')
+          )
+          .toList();
+      
+      if (kDebugMode) {
+        print('Found ${videoFiles.length} video files');
+        for (var file in videoFiles) {
+          print('Video file: ${file.name}, MIME: ${file.mimeType}');
+        }
+      }
+      
+      return videoFiles.length;
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error getting video count: $e');
+      }
+      return 0;
+    }
+  }
+
   static List<InformationItem> getInformationItems() {
     return [
       InformationItem(

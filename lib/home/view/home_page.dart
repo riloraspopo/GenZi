@@ -20,7 +20,9 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   Future<List<EducationalPoster>>? _postersFuture;
   Future<List<PdfResource>>? _pdfResourcesFuture;
+  Future<int>? _videoCountFuture;
   final ScrollController _postersScrollController = ScrollController();
+  final ScrollController _mainScrollController = ScrollController();
   double _scrollPercent = 0.0;
   final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
       GlobalKey<RefreshIndicatorState>();
@@ -83,6 +85,12 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       overlays: [SystemUiOverlay.top, SystemUiOverlay.bottom],
     );
     _postersScrollController.addListener(_updateScrollPercent);
+    
+    // Initialize data loading
+    _postersFuture = DataProvider.getPosters();
+    _pdfResourcesFuture = DataProvider.getPdfResources();
+    _videoCountFuture = DataProvider.getVideoCount();
+    
     _refreshData();
   }
 
@@ -117,6 +125,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       setState(() {
         _postersFuture = null;
         _pdfResourcesFuture = null;
+        _videoCountFuture = null;
         _postersListKey = UniqueKey();
       });
 
@@ -129,15 +138,17 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       // Now fetch new data
       final posters = DataProvider.getPosters();
       final pdfs = DataProvider.getPdfResources();
+      final videoCount = DataProvider.getVideoCount();
 
       if (!mounted) return;
 
       setState(() {
         _postersFuture = posters;
         _pdfResourcesFuture = pdfs;
+        _videoCountFuture = videoCount;
       });
 
-      await Future.wait([posters, pdfs]);
+      await Future.wait([posters, pdfs, videoCount]);
     } catch (e) {
       if (kDebugMode) {
         print('Error refreshing data: $e');
@@ -173,6 +184,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   @override
   void dispose() {
     _postersScrollController.dispose();
+    _mainScrollController.dispose();
     _greetingAnimationController.dispose();
     _cardAnimationController.dispose();
     super.dispose();
@@ -272,60 +284,65 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     required String value,
     required IconData icon,
     required Color color,
+    VoidCallback? onTap,
   }) {
     return AnimatedBuilder(
       animation: _cardScaleAnimation,
       builder: (context, child) {
         return Transform.scale(
           scale: _cardScaleAnimation.value,
-          child: Container(
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(16),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.grey.withValues(alpha: 0.1),
-                  blurRadius: 10,
-                  offset: const Offset(0, 4),
-                ),
-              ],
-            ),
-            child: Column(
-              children: [
-                Container(
-                  width: 50,
-                  height: 50,
-                  decoration: BoxDecoration(
-                    color: color.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(12),
+          child: GestureDetector(
+            onTap: onTap,
+            child: Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withValues(alpha: 0.1),
+                    blurRadius: 10,
+                    offset: const Offset(0, 4),
                   ),
-                  child: Icon(
-                    icon,
-                    size: 24,
-                    color: color,
+                ],
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      color: color.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Icon(
+                      icon,
+                      size: 20,
+                      color: color,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 12),
-                Text(
-                  value,
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.grey[800],
+                  const SizedBox(height: 8),
+                  Text(
+                    value,
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.grey[800],
+                    ),
                   ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  title,
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey[600],
-                    fontWeight: FontWeight.w500,
+                  const SizedBox(height: 2),
+                  Text(
+                    title,
+                    style: TextStyle(
+                      fontSize: 10,
+                      color: Colors.grey[600],
+                      fontWeight: FontWeight.w500,
+                    ),
+                    textAlign: TextAlign.center,
                   ),
-                  textAlign: TextAlign.center,
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         );
@@ -446,10 +463,11 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           onRefresh: _refreshData,
           color: Colors.deepPurple,
           child: CustomScrollView(
+            controller: _mainScrollController,
             slivers: [
               // Custom App Bar with greeting
               SliverAppBar(
-                expandedHeight: 280,
+                expandedHeight: 300,
                 floating: false,
                 pinned: true,
                 backgroundColor: Colors.deepPurple,
@@ -498,6 +516,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                           left: 24,
                           right: 24,
                           bottom: 40,
+                          top: 60,
                           child: FadeTransition(
                             opacity: _greetingFadeAnimation,
                             child: SlideTransition(
@@ -505,23 +524,48 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text(
-                                    _getGreeting(),
-                                    style: const TextStyle(
-                                      fontSize: 24,
-                                      fontWeight: FontWeight.w600,
-                                      color: Colors.white,
-                                    ),
+                                  Row(
+                                    children: [
+                                      Container(
+                                        width: 60,
+                                        height: 60,
+                                        padding: const EdgeInsets.all(8),
+                                        decoration: BoxDecoration(
+                                          color: Colors.white.withValues(alpha: 0.15),
+                                          shape: BoxShape.circle,
+                                        ),
+                                        child: Image.asset(
+                                          'assets/sigizi.png',
+                                          fit: BoxFit.contain,
+                                        ),
+                                      ),
+                                      const SizedBox(width: 16),
+                                      Expanded(
+                                        child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              _getGreeting(),
+                                              style: const TextStyle(
+                                                fontSize: 24,
+                                                fontWeight: FontWeight.w600,
+                                                color: Colors.white,
+                                              ),
+                                            ),
+                                            const SizedBox(height: 4),
+                                            const Text(
+                                              'Mari belajar bersama hari ini!',
+                                              style: TextStyle(
+                                                fontSize: 16,
+                                                color: Colors.white70,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                  const SizedBox(height: 8),
-                                  const Text(
-                                    'Mari belajar bersama hari ini!',
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      color: Colors.white70,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 24),
+                                  const SizedBox(height: 20),
                                   Row(
                                     children: [
                                       Expanded(
@@ -533,33 +577,86 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                               value: '${snapshot.data?.length ?? 0}',
                                               icon: Icons.image_rounded,
                                               color: Colors.orange,
+                                               onTap: () {
+                                                 // Scroll to posters section
+                                                 _mainScrollController.animateTo(
+                                                   650,
+                                                   duration: const Duration(milliseconds: 800),
+                                                   curve: Curves.easeInOut,
+                                                 );
+                                               },
                                             );
                                           },
                                         ),
                                       ),
-                                      const SizedBox(width: 16),
-                                      Expanded(
-                                        child: FutureBuilder<List<PdfResource>>(
-                                          future: _pdfResourcesFuture,
-                                          builder: (context, snapshot) {
-                                            return _buildStatsCard(
-                                              title: 'Dokumen\nPDF',
-                                              value: '${snapshot.data?.length ?? 0}',
-                                              icon: Icons.description_rounded,
-                                              color: Colors.red,
-                                            );
-                                          },
-                                        ),
-                                      ),
-                                      const SizedBox(width: 16),
-                                      Expanded(
-                                        child: _buildStatsCard(
-                                          title: 'Mini\nGames',
-                                          value: '2',
-                                          icon: Icons.games_rounded,
-                                          color: Colors.green,
-                                        ),
-                                      ),
+                                      const SizedBox(width: 12),
+                                       Expanded(
+                                         child: FutureBuilder<List<PdfResource>>(
+                                           future: _pdfResourcesFuture,
+                                           builder: (context, snapshot) {
+                                             return _buildStatsCard(
+                                               title: 'Dokumen\nPDF',
+                                               value: '${snapshot.data?.length ?? 0}',
+                                               icon: Icons.description_rounded,
+                                               color: Colors.red,
+                                                onTap: () {
+                                                  // Scroll to PDF section
+                                                  _mainScrollController.animateTo(
+                                                    1050,
+                                                    duration: const Duration(milliseconds: 800),
+                                                    curve: Curves.easeInOut,
+                                                  );
+                                                },
+                                             );
+                                           },
+                                         ),
+                                       ),
+                                      const SizedBox(width: 12),
+                                       Expanded(
+                                         child: FutureBuilder<int>(
+                                           future: _videoCountFuture,
+                                           builder: (context, snapshot) {
+                                             if (kDebugMode) {
+                                               print('Video count snapshot: ${snapshot.connectionState}, data: ${snapshot.data}, error: ${snapshot.error}');
+                                             }
+                                             return _buildStatsCard(
+                                               title: 'Video\nBelajar',
+                                               value: '${snapshot.data ?? 0}',
+                                               icon: Icons.play_circle_rounded,
+                                               color: Colors.blue,
+                                               onTap: () {
+                                                 // Navigate to video list page
+                                                 Navigator.push(
+                                                   context,
+                                                   MaterialPageRoute(
+                                                     builder: (context) => const VideoListPage(
+                                                       bucketId: DataProvider.mediaBucketId,
+                                                     ),
+                                                   ),
+                                                 );
+                                               },
+                                             );
+                                           },
+                                         ),
+                                       ),
+                                      const SizedBox(width: 12),
+                                       Expanded(
+                                         child: _buildStatsCard(
+                                           title: 'Mini\nGames',
+                                           value: '3',
+                                           icon: Icons.games_rounded,
+                                           color: Colors.green,
+                                           onTap: () {
+                                             // Navigate to mini game menu page
+                                             Navigator.push(
+                                               context,
+                                               MaterialPageRoute(
+                                                 builder: (context) => const MiniGameMenuPage(),
+                                               ),
+                                             );
+                                           },
+                                         ),
+                                       ),
                                     ],
                                   ),
                                 ],
