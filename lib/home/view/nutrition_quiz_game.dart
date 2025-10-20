@@ -8,6 +8,17 @@ class NutritionQuizGame extends StatefulWidget {
 }
 
 class _NutritionQuizGameState extends State<NutritionQuizGame> {
+  @override
+  void initState() {
+    super.initState();
+    _initializeQuestions();
+  }
+
+  void _initializeQuestions() {
+    // Randomly select 8 questions
+    List<Map<String, dynamic>> shuffledQuestions = List.from(_allQuestions)..shuffle();
+    _questions = shuffledQuestions.take(8).toList();
+  }
   int _currentQuestionIndex = 0;
   int _score = 0;
   bool _hasAnswered = false;
@@ -15,7 +26,9 @@ class _NutritionQuizGameState extends State<NutritionQuizGame> {
   bool _gameCompleted = false;
   String _selectedAnswer = '';
 
-  final List<Map<String, dynamic>> _questions = [
+  late List<Map<String, dynamic>> _questions = [];
+  
+  final List<Map<String, dynamic>> _allQuestions = [
     {
       'question': 'Makanan mana yang kaya akan protein?',
       'options': ['Nasi Putih', 'Telur', 'Gula', 'Keripik'],
@@ -72,7 +85,7 @@ class _NutritionQuizGameState extends State<NutritionQuizGame> {
           'Nasi merah mengandung serat dan nutrisi lebih banyak dibanding nasi putih.',
       'emoji': '🍙',
     },
-    {
+     {
       'question': 'Buah mana yang baik untuk kesehatan mata?',
       'options': ['Wortel', 'Durian', 'Mangga', 'Semua benar'],
       'correct': 'Semua benar',
@@ -80,6 +93,94 @@ class _NutritionQuizGameState extends State<NutritionQuizGame> {
           'Wortel, durian, dan mangga mengandung beta karoten yang baik untuk mata.',
       'emoji': '👁️',
     },
+    {
+      'question': 'Sumber protein nabati dapat ditemukan pada?',
+      'options': ['Tempe', 'Ayam', 'Ikan', 'Telur'],
+      'correct': 'Tempe',
+      'explanation':
+          'Tempe adalah sumber protein nabati yang baik dan kaya akan nutrisi.',
+      'emoji': '🫘',
+    },
+    {
+      'question': 'Makanan fermentasi yang baik untuk pencernaan adalah?',
+      'options': ['Yogurt', 'Es Krim', 'Permen', 'Keripik'],
+      'correct': 'Yogurt',
+      'explanation':
+          'Yogurt mengandung probiotik yang baik untuk kesehatan pencernaan.',
+      'emoji': '🥛',
+    },
+    {
+      'question': 'Mineral apa yang penting untuk kesehatan tulang?',
+      'options': ['Kalsium', 'Sodium', 'Gula', 'Lemak'],
+      'correct': 'Kalsium',
+      'explanation':
+          'Kalsium sangat penting untuk pertumbuhan dan kesehatan tulang.',
+      'emoji': '🦴',
+    },
+    {
+      'question': 'Buah yang tinggi serat adalah?',
+      'options': ['Apel', 'Permen', 'Roti Putih', 'Keripik'],
+      'correct': 'Apel',
+      'explanation':
+          'Apel kaya akan serat yang baik untuk pencernaan dan kesehatan jantung.',
+      'emoji': '🍎',
+    },
+    {
+      'question': 'Manakah yang termasuk sayuran hijau?',
+      'options': ['Bayam', 'Wortel', 'Tomat', 'Kentang'],
+      'correct': 'Bayam',
+      'explanation':
+          'Bayam adalah sayuran hijau yang kaya akan zat besi dan nutrisi penting.',
+      'emoji': '🥬',
+    },
+    {
+      'question': 'Apa manfaat makan ikan?',
+      'options': ['Omega 3', 'Gula Tinggi', 'Lemak Trans', 'Kolesterol'],
+      'correct': 'Omega 3',
+      'explanation':
+          'Ikan kaya akan Omega 3 yang baik untuk kesehatan otak dan jantung.',
+      'emoji': '🐟',
+    },
+    {
+      'question': 'Kapan waktu terbaik untuk sarapan?',
+      'options': ['Pagi Hari', 'Siang Hari', 'Malam Hari', 'Tidak Perlu'],
+      'correct': 'Pagi Hari',
+      'explanation':
+          'Sarapan di pagi hari penting untuk energi dan konsentrasi sepanjang hari.',
+      'emoji': '🌅',
+    },
+    {
+      'question': 'Minuman apa yang sebaiknya dibatasi?',
+      'options': ['Air Putih', 'Teh Tawar', 'Soda', 'Jus Buah'],
+      'correct': 'Soda',
+      'explanation':
+          'Soda mengandung gula tinggi dan tidak memiliki nilai gizi yang baik.',
+      'emoji': '🥤',
+    },
+    {
+      'question': 'Berapa kali minimal makan buah dalam sehari?',
+      'options': ['1 kali', '2 kali', '3 kali', 'Tidak Perlu'],
+      'correct': '2 kali',
+      'explanation':
+          'Minimal 2 kali sehari makan buah untuk memenuhi kebutuhan vitamin dan mineral.',
+      'emoji': '🍎',
+    },
+    {
+      'question': 'Makanan yang baik untuk otak adalah?',
+      'options': ['Ikan', 'Permen', 'Soda', 'Keripik'],
+      'correct': 'Ikan',
+      'explanation':
+          'Ikan mengandung omega 3 yang sangat baik untuk perkembangan otak.',
+      'emoji': '🧠',
+    },
+    {
+      'question': 'Sumber vitamin C terbaik adalah?',
+      'options': ['Jeruk', 'Roti', 'Keju', 'Daging'],
+      'correct': 'Jeruk',
+      'explanation':
+          'Jeruk kaya akan vitamin C yang penting untuk sistem kekebalan tubuh.',
+      'emoji': '🍊',
+    }
   ];
 
   void _selectAnswer(String answer) {
@@ -118,6 +219,7 @@ class _NutritionQuizGameState extends State<NutritionQuizGame> {
       _isCorrect = false;
       _gameCompleted = false;
       _selectedAnswer = '';
+      _initializeQuestions(); // Select new random questions
     });
   }
 
