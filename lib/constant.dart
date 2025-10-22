@@ -4,3 +4,7 @@ class AppwriteConstants {
   static const String APPWRITE_PROJECT_ID = "68f053b1002a24862154";
   static const String APPWRITE_PUBLIC_ENDPOINT = "https://apidinkes.metrokota.go.id/v1";
 }
+
+class GeminiConstants {
+  static const String API_KEY = "AIzaSyDSgapndwectKCyWDzkEn7zlcJSpEOsq74";
+}

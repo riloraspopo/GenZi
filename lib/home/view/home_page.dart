@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:myapp/home/view/chat_page.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:myapp/home/data/data_provider.dart';
 import 'package:myapp/home/models/educational_content.dart';
@@ -460,6 +461,27 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       ),
       child: Scaffold(
         backgroundColor: Colors.grey[50],
+        floatingActionButton: AnimatedBuilder(
+          animation: _cardScaleAnimation,
+          builder: (context, child) {
+            return Transform.scale(
+              scale: _cardScaleAnimation.value,
+              child: FloatingActionButton.extended(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const ChatPage(),
+                    ),
+                  );
+                },
+                icon: const Icon(Icons.chat_bubble_outline),
+                label: const Text('Chat dengan AI'),
+                backgroundColor: Colors.blue,
+              ),
+            );
+          },
+        ),
         body: RefreshIndicator(
           key: _refreshIndicatorKey,
           onRefresh: _refreshData,
@@ -756,7 +778,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                         },
                       ),
                       const SizedBox(height: 16),
-                      _buildQuickActionCard(
+                       _buildQuickActionCard(
                         title: 'Video Pembelajaran',
                         subtitle: 'Tonton video edukasi menarik',
                         icon: Icons.play_circle_fill_rounded,
@@ -796,18 +818,17 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                               color: Colors.black87,
                             ),
                           ),
-                          TextButton(
-                            onPressed: () {
-                              // TODO: Navigate to all posters page
-                            },
-                            child: Text(
-                              'Lihat Semua',
-                              style: TextStyle(
-                                color: Colors.deepPurple.shade600,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ),
+                          // TextButton(
+                          //   onPressed: () {
+                          //   },
+                          //   child: Text(
+                          //     'Lihat Semua',
+                          //     style: TextStyle(
+                          //       color: Colors.deepPurple.shade600,
+                          //       fontWeight: FontWeight.w600,
+                          //     ),
+                          //   ),
+                          // ),
                         ],
                       ),
                       const SizedBox(height: 16),
