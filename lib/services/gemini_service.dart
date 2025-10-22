@@ -3,7 +3,7 @@ import '../constant.dart';
 
 class GeminiService {
   static final GenerativeModel _model = GenerativeModel(
-    model: 'gemini-2.5-flash',
+    model: 'gemini-2.0-flash-lite',
     apiKey: GeminiConstants.API_KEY,
   );
 
