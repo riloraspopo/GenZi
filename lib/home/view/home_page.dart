@@ -464,20 +464,47 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         floatingActionButton: AnimatedBuilder(
           animation: _cardScaleAnimation,
           builder: (context, child) {
+            final isDark = Theme.of(context).brightness == Brightness.dark;
             return Transform.scale(
               scale: _cardScaleAnimation.value,
-              child: FloatingActionButton.extended(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const ChatPage(),
+              child: Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(28),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.blue.withOpacity(0.4),
+                      blurRadius: 8,
+                      spreadRadius: 2,
+                      offset: const Offset(0, 4),
                     ),
-                  );
-                },
-                icon: const Icon(Icons.chat_bubble_outline),
-                label: const Text('Chat dengan AI'),
-                backgroundColor: Colors.blue,
+                  ],
+                  gradient: LinearGradient(
+                    colors: [Colors.blue, Colors.blue.shade700],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                ),
+                child: FloatingActionButton.extended(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const ChatPage()),
+                    );
+                  },
+                  backgroundColor: Colors.transparent,
+                  elevation: 0,
+                  icon: Icon(
+                    Icons.chat_bubble_outline,
+                    color: isDark ? Colors.white : Colors.white,
+                  ),
+                  label: Text(
+                    'Chat dengan AI',
+                    style: TextStyle(
+                      color: isDark ? Colors.white : Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
               ),
             );
           },
@@ -509,14 +536,14 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                           shape: BoxShape.circle,
                         ),
                         child: Image.asset(
-                          'assets/sigizi.png',
+                          'assets/icongenzi.png',
                           fit: BoxFit.contain,
                         ),
                       ),
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 8),
                         child: Text(
-                          'Si Gizi',
+                          'Gen Zi',
                           style: TextStyle(
                             color: Colors.white,
                             fontWeight: FontWeight.bold,
@@ -592,7 +619,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                           shape: BoxShape.circle,
                                         ),
                                         child: Image.asset(
-                                          'assets/sigizi.png',
+                                          'assets/icongenzi.png',
                                           fit: BoxFit.contain,
                                         ),
                                       ),
@@ -778,7 +805,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                         },
                       ),
                       const SizedBox(height: 16),
-                       _buildQuickActionCard(
+                      _buildQuickActionCard(
                         title: 'Video Pembelajaran',
                         subtitle: 'Tonton video edukasi menarik',
                         icon: Icons.play_circle_fill_rounded,
