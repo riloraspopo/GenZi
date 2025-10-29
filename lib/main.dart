@@ -1,9 +1,14 @@
 import 'package:appwrite/appwrite.dart';
 import 'package:flutter/material.dart';
 import 'package:myapp/constant.dart';
+import 'package:myapp/services/appwrite_service.dart';
 import 'home/view/home_page.dart';
+import 'package:myapp/home/view/teacher_login_page.dart';
+import 'package:myapp/home/view/survey_page.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await AppwriteService.init();
   runApp(const MyApp());
 }
 
@@ -12,15 +17,16 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Client client = Client().setEndpoint(AppwriteConstants.APPWRITE_PUBLIC_ENDPOINT)
-    .setProject(AppwriteConstants.APPWRITE_PROJECT_ID);
+    Client client = Client()
+        .setEndpoint(AppwriteConstants.APPWRITE_PUBLIC_ENDPOINT)
+        .setProject(AppwriteConstants.APPWRITE_PROJECT_ID);
     client.ping();
 
     return MaterialApp(
       title: 'Educational App',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
-          seedColor: Colors.blue,
+          seedColor: Colors.deepPurple,
           brightness: Brightness.light,
         ),
         useMaterial3: true,
@@ -48,6 +54,10 @@ class MyApp extends StatelessWidget {
         ),
       ),
       home: const HomePage(),
+      routes: {
+        '/login': (context) => const TeacherLoginPage(),
+        '/survey': (context) => const SurveyPage(),
+      },
     );
   }
 }

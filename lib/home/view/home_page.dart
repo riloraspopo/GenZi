@@ -11,6 +11,7 @@ import 'package:myapp/home/view/pdf_viewer_page.dart';
 import 'package:myapp/home/view/mini_game_menu_page.dart';
 import 'package:myapp/home/view/video_list_page.dart';
 import 'package:myapp/home/view/bmi_calculator_page.dart';
+import 'package:myapp/home/view/teacher_login_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -522,6 +523,20 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                 floating: false,
                 pinned: true,
                 backgroundColor: Colors.deepPurple,
+                actions: [
+                  IconButton(
+                    icon: const Icon(Icons.school_rounded),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const TeacherLoginPage(),
+                        ),
+                      );
+                    },
+                    tooltip: 'Login Guru',
+                  ),
+                ],
                 title: AnimatedOpacity(
                   duration: Duration(milliseconds: 300),
                   opacity: _showTitle ? 1.0 : 0.0,
