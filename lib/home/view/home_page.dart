@@ -10,6 +10,7 @@ import 'package:myapp/home/view/full_screen_image_viewer.dart';
 import 'package:myapp/home/view/pdf_viewer_page.dart';
 import 'package:myapp/home/view/mini_game_menu_page.dart';
 import 'package:myapp/home/view/video_list_page.dart';
+import 'package:myapp/home/view/bmi_calculator_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -60,11 +61,11 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
     _greetingSlideAnimation =
         Tween<Offset>(begin: const Offset(0, 0.3), end: Offset.zero).animate(
-          CurvedAnimation(
-            parent: _greetingAnimationController,
-            curve: Curves.easeOutQuart,
-          ),
-        );
+      CurvedAnimation(
+        parent: _greetingAnimationController,
+        curve: Curves.easeOutQuart,
+      ),
+    );
 
     _cardScaleAnimation = Tween<double>(begin: 0.8, end: 1.0).animate(
       CurvedAnimation(
@@ -176,8 +177,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     if (_postersScrollController.hasClients &&
         _postersScrollController.position.maxScrollExtent > 0) {
       setState(() {
-        _scrollPercent =
-            _postersScrollController.offset /
+        _scrollPercent = _postersScrollController.offset /
             _postersScrollController.position.maxScrollExtent;
       });
     }
@@ -654,35 +654,29 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                   Row(
                                     children: [
                                       Expanded(
-                                        child:
-                                            FutureBuilder<
-                                              List<EducationalPoster>
-                                            >(
-                                              future: _postersFuture,
-                                              builder: (context, snapshot) {
-                                                return _buildStatsCard(
-                                                  title: 'Poster\nTersedia',
-                                                  value:
-                                                      '${snapshot.data?.length ?? 0}',
-                                                  icon: Icons.image_rounded,
-                                                  color: Colors.orange,
-                                                  onTap: () {
-                                                    // Scroll to posters section
-                                                    _mainScrollController
-                                                        .animateTo(
-                                                          650,
-                                                          duration:
-                                                              const Duration(
-                                                                milliseconds:
-                                                                    800,
-                                                              ),
-                                                          curve:
-                                                              Curves.easeInOut,
-                                                        );
-                                                  },
+                                        child: FutureBuilder<
+                                            List<EducationalPoster>>(
+                                          future: _postersFuture,
+                                          builder: (context, snapshot) {
+                                            return _buildStatsCard(
+                                              title: 'Poster\nTersedia',
+                                              value:
+                                                  '${snapshot.data?.length ?? 0}',
+                                              icon: Icons.image_rounded,
+                                              color: Colors.orange,
+                                              onTap: () {
+                                                // Scroll to posters section
+                                                _mainScrollController.animateTo(
+                                                  650,
+                                                  duration: const Duration(
+                                                    milliseconds: 800,
+                                                  ),
+                                                  curve: Curves.easeInOut,
                                                 );
                                               },
-                                            ),
+                                            );
+                                          },
+                                        ),
                                       ),
                                       const SizedBox(width: 12),
                                       Expanded(
@@ -731,9 +725,9 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                                   MaterialPageRoute(
                                                     builder: (context) =>
                                                         const VideoListPage(
-                                                          bucketId: DataProvider
-                                                              .mediaBucketId,
-                                                        ),
+                                                      bucketId: DataProvider
+                                                          .mediaBucketId,
+                                                    ),
                                                   ),
                                                 );
                                               },
@@ -818,6 +812,22 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                               builder: (context) => const VideoListPage(
                                 bucketId: DataProvider.mediaBucketId,
                               ),
+                            ),
+                          );
+                        },
+                      ),
+                      const SizedBox(height: 16),
+                      _buildQuickActionCard(
+                        title: 'Kalkulator BMI',
+                        subtitle: 'Cek status berat badan idealmu',
+                        icon: Icons.health_and_safety_rounded,
+                        startColor: Colors.green.shade400,
+                        endColor: Colors.green.shade600,
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const BMICalculatorPage(),
                             ),
                           );
                         },
@@ -1104,11 +1114,12 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                                 decoration: BoxDecoration(
                                                   color: Colors.red.shade50,
                                                   borderRadius:
-                                                      const BorderRadius.vertical(
-                                                        top: Radius.circular(
-                                                          16,
-                                                        ),
-                                                      ),
+                                                      const BorderRadius
+                                                          .vertical(
+                                                    top: Radius.circular(
+                                                      16,
+                                                    ),
+                                                  ),
                                                 ),
                                                 child: Center(
                                                   child: Icon(
