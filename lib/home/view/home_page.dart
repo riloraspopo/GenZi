@@ -525,7 +525,10 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                 backgroundColor: Colors.deepPurple,
                 actions: [
                   IconButton(
-                    icon: const Icon(Icons.school_rounded),
+                    icon: const Icon(
+                      Icons.school_rounded,
+                      color: Colors.white,
+                    ),
                     onPressed: () {
                       Navigator.push(
                         context,

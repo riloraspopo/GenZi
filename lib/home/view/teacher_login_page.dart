@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:myapp/services/appwrite_service.dart';
-import 'package:myapp/home/view/survey_page.dart';
 
 class TeacherLoginPage extends StatefulWidget {
   const TeacherLoginPage({Key? key}) : super(key: key);
@@ -27,7 +26,7 @@ class _TeacherLoginPageState extends State<TeacherLoginPage> {
     try {
       if (await AppwriteService.hasValidSession()) {
         if (!mounted) return;
-        Navigator.pushReplacementNamed(context, '/survey');
+        Navigator.pushReplacementNamed(context, '/dashboard');
       }
     } catch (e) {
       // Ignore errors, just continue to login page
@@ -51,13 +50,8 @@ class _TeacherLoginPageState extends State<TeacherLoginPage> {
 
       if (!mounted) return;
 
-      // Navigate to survey page after successful login
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => const SurveyPage(),
-        ),
-      );
+      // Navigate to dashboard after successful login
+      Navigator.pushReplacementNamed(context, '/dashboard');
     } catch (e) {
       if (!mounted) return;
 

@@ -138,22 +138,6 @@ class _SurveyPageState extends State<SurveyPage> {
     }
   }
 
-  Future<void> _logout() async {
-    try {
-      await AppwriteService.deleteCurrentSession();
-      if (!mounted) return;
-      Navigator.of(context).pushReplacementNamed('/login');
-    } catch (e) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Error logging out: $e'),
-          backgroundColor: Colors.red,
-        ),
-      );
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -212,10 +196,6 @@ class _SurveyPageState extends State<SurveyPage> {
                 },
                 tooltip: 'Buat Pertanyaan Test',
               ),
-            IconButton(
-              icon: const Icon(Icons.logout),
-              onPressed: _logout,
-            ),
           ],
         ),
         body: SafeArea(
