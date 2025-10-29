@@ -1,8 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_pdfview/flutter_pdfview.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:http/http.dart' as http;
+import 'package:myapp/services/cache_service.dart';
 
 class PdfViewerPage extends StatefulWidget {
   final String pdfUrl;
@@ -25,12 +24,14 @@ class _PdfViewerPageState extends State<PdfViewerPage> {
   String? errorMessage;
   int currentPage = 1;
   int totalPages = 0;
-  
+
   @override
   void initState() {
     super.initState();
     _downloadAndOpenPdf();
   }
+
+  final CacheService _cacheService = CacheService();
 
   Future<void> _downloadAndOpenPdf() async {
     try {
@@ -39,22 +40,23 @@ class _PdfViewerPageState extends State<PdfViewerPage> {
         hasError = false;
       });
 
-      final response = await http.get(Uri.parse(widget.pdfUrl));
-      
-      if (response.statusCode == 200) {
-        final bytes = response.bodyBytes;
-        final dir = await getTemporaryDirectory();
-        final file = File('${dir.path}/temp_pdf.pdf');
-        await file.writeAsBytes(bytes);
-        
+      // Check cache first
+      File? cachedFile = await _cacheService.getCachedFile(widget.pdfUrl);
+
+      if (cachedFile == null) {
+        // If not in cache, download and cache it
+        cachedFile = await _cacheService.cachePDF(widget.pdfUrl);
+      }
+
+      if (await cachedFile.exists()) {
         setState(() {
-          localPath = file.path;
+          localPath = cachedFile?.path;
           isLoading = false;
         });
       } else {
         setState(() {
           hasError = true;
-          errorMessage = 'Gagal mengunduh PDF: ${response.statusCode}';
+          errorMessage = 'Gagal memuat PDF dari cache';
           isLoading = false;
         });
       }
