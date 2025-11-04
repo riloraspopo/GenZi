@@ -8,6 +8,7 @@ class AppwriteConstants {
   static const String DATABASE_ID = "6901a98c00126c31d43e";
   static const String SURVEY_COLLECTION_ID = "pertanyaan";
   static const String SURVEY_RESPONSES_COLLECTION_ID = "jawaban";
+  static const String BMI_RECORDS_COLLECTION_ID = "bmi_records";
 }
 
 class GeminiConstants {

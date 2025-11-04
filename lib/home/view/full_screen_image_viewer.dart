@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/services.dart';
 
 class FullScreenImageViewer extends StatefulWidget {
@@ -40,7 +39,7 @@ class _FullScreenImageViewerState extends State<FullScreenImageViewer> {
     setState(() {
       _isFullScreen = !_isFullScreen;
     });
-    
+
     if (_isFullScreen) {
       SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
     } else {
@@ -83,26 +82,30 @@ class _FullScreenImageViewerState extends State<FullScreenImageViewer> {
               child: Center(
                 child: Hero(
                   tag: widget.imageUrl,
-                  child: CachedNetworkImage(
-                    imageUrl: widget.imageUrl,
-                    placeholder: (context, url) => Container(
-                      color: Colors.black,
-                      child: const Center(
-                        child: CircularProgressIndicator(
-                          color: Colors.white,
+                  child: Image.network(
+                    widget.imageUrl,
+                    headers: const {'X-Requested-With': 'XMLHttpRequest'},
+                    loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
+                      if (loadingProgress == null) return child;
+                      return Container(
+                        color: Colors.black,
+                        child: const Center(
+                          child: CircularProgressIndicator(color: Colors.white),
                         ),
-                      ),
-                    ),
-                    errorWidget: (context, url, error) => Container(
-                      color: Colors.black,
-                      child: const Center(
-                        child: Icon(
-                          Icons.error_outline,
-                          color: Colors.white,
-                          size: 50,
+                      );
+                    },
+                    errorBuilder: (context, error, stackTrace) {
+                      return Container(
+                        color: Colors.black,
+                        child: const Center(
+                          child: Icon(
+                            Icons.error_outline,
+                            color: Colors.white,
+                            size: 50,
+                          ),
                         ),
-                      ),
-                    ),
+                      );
+                    },
                     fit: BoxFit.contain,
                     width: double.infinity,
                     height: double.infinity,
@@ -110,7 +113,7 @@ class _FullScreenImageViewerState extends State<FullScreenImageViewer> {
                 ),
               ),
             ),
-            
+
             // Fullscreen toggle button overlay
             if (_isFullScreen)
               Positioned(
@@ -137,7 +140,9 @@ class _FullScreenImageViewerState extends State<FullScreenImageViewer> {
               bottom: 16,
               right: 16,
               child: AnimatedOpacity(
-                opacity: _controller.value.getMaxScaleOnAxis() > 1.0 ? 1.0 : 0.0,
+                opacity: _controller.value.getMaxScaleOnAxis() > 1.0
+                    ? 1.0
+                    : 0.0,
                 duration: const Duration(milliseconds: 200),
                 child: Material(
                   color: Colors.black.withAlpha((0.5 * 255).round()),
@@ -149,10 +154,7 @@ class _FullScreenImageViewerState extends State<FullScreenImageViewer> {
                     borderRadius: BorderRadius.circular(24),
                     child: const Padding(
                       padding: EdgeInsets.all(8),
-                      child: Icon(
-                        Icons.zoom_out_map,
-                        color: Colors.white,
-                      ),
+                      child: Icon(Icons.zoom_out_map, color: Colors.white),
                     ),
                   ),
                 ),

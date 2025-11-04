@@ -3,13 +3,13 @@ import 'package:myapp/services/appwrite_service.dart';
 import 'package:appwrite/models.dart' as models;
 
 class SchoolDashboardPage extends StatefulWidget {
-  const SchoolDashboardPage({Key? key}) : super(key: key);
+  const SchoolDashboardPage({super.key});
 
   @override
-  _SchoolDashboardPageState createState() => _SchoolDashboardPageState();
+  SchoolDashboardPageState createState() => SchoolDashboardPageState();
 }
 
-class _SchoolDashboardPageState extends State<SchoolDashboardPage> {
+class SchoolDashboardPageState extends State<SchoolDashboardPage> {
   models.User? _currentUser;
   bool _isLoading = true;
 
@@ -31,10 +31,7 @@ class _SchoolDashboardPageState extends State<SchoolDashboardPage> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error: $e'),
-            backgroundColor: Colors.red,
-          ),
+          SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red),
         );
       }
     }
@@ -74,14 +71,10 @@ class _SchoolDashboardPageState extends State<SchoolDashboardPage> {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: color.withOpacity(0.1),
+                  color: color.withAlpha((0.1 * 255).round()),
                   shape: BoxShape.circle,
                 ),
-                child: Icon(
-                  icon,
-                  size: 32,
-                  color: color,
-                ),
+                child: Icon(icon, size: 32, color: color),
               ),
               const SizedBox(height: 12),
               Text(
@@ -102,9 +95,7 @@ class _SchoolDashboardPageState extends State<SchoolDashboardPage> {
   @override
   Widget build(BuildContext context) {
     if (_isLoading) {
-      return const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
-      );
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
 
     return Scaffold(
@@ -124,16 +115,15 @@ class _SchoolDashboardPageState extends State<SchoolDashboardPage> {
           children: [
             Container(
               padding: const EdgeInsets.all(20),
-              color: Theme.of(context).primaryColor.withOpacity(0.1),
+              color: Theme.of(
+                context,
+              ).primaryColor.withAlpha((0.1 * 255).round()),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     'Selamat datang,',
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Colors.grey[600],
-                    ),
+                    style: TextStyle(fontSize: 16, color: Colors.grey[600]),
                   ),
                   const SizedBox(height: 4),
                   Text(

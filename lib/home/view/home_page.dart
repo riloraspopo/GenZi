@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:cached_network_image/cached_network_image.dart';
+
 import 'package:myapp/home/view/chat_page.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:myapp/home/data/data_provider.dart';
@@ -62,11 +62,11 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
     _greetingSlideAnimation =
         Tween<Offset>(begin: const Offset(0, 0.3), end: Offset.zero).animate(
-      CurvedAnimation(
-        parent: _greetingAnimationController,
-        curve: Curves.easeOutQuart,
-      ),
-    );
+          CurvedAnimation(
+            parent: _greetingAnimationController,
+            curve: Curves.easeOutQuart,
+          ),
+        );
 
     _cardScaleAnimation = Tween<double>(begin: 0.8, end: 1.0).animate(
       CurvedAnimation(
@@ -137,7 +137,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       await Future.delayed(const Duration(milliseconds: 300));
 
       // Clear CachedNetworkImage cache
-      await CachedNetworkImage.evictFromCache('');
+
 
       // Now fetch new data
       final posters = DataProvider.getPosters();
@@ -178,7 +178,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     if (_postersScrollController.hasClients &&
         _postersScrollController.position.maxScrollExtent > 0) {
       setState(() {
-        _scrollPercent = _postersScrollController.offset /
+        _scrollPercent =
+            _postersScrollController.offset /
             _postersScrollController.position.maxScrollExtent;
       });
     }
@@ -390,49 +391,51 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                     borderRadius: const BorderRadius.vertical(
                       top: Radius.circular(20),
                     ),
-                    child: CachedNetworkImage(
-                      imageUrl: poster.imageUrl,
-                      fit: BoxFit.cover,
-                      width: double.infinity,
-                      httpHeaders: const {'X-Requested-With': 'XMLHttpRequest'},
-                      placeholder: (context, url) => Shimmer.fromColors(
-                        baseColor: Colors.grey[300]!,
-                        highlightColor: Colors.grey[100]!,
-                        child: Container(color: Colors.white),
-                      ),
-                      errorWidget: (context, url, error) {
-                        if (kDebugMode) {
-                          print('Error loading image: $url');
-                          print('Error details: $error');
-                        }
-                        return Container(
-                          color: Colors.grey.shade200,
-                          child: Center(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(
-                                  Icons.error_outline,
-                                  size: 50,
-                                  color: Colors.grey.shade400,
-                                ),
-                                const SizedBox(height: 8),
-                                Text(
-                                  'Kesalahan Gambar',
-                                  style: TextStyle(
-                                    color: Colors.grey.shade600,
-                                    fontSize: 12,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        );
-                      },
+                    child: Image.network(
+                                          poster.imageUrl,
+                                          fit: BoxFit.cover,
+                                          headers: const {'X-Requested-With': 'XMLHttpRequest'},
+                                          loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
+                                            if (loadingProgress == null) return child;
+                                            return Shimmer.fromColors(
+                                              baseColor: Colors.grey[300]!,
+                                              highlightColor: Colors.grey[100]!,
+                                              child: Container(color: Colors.white),
+                                            );
+                                          },
+                                          errorBuilder: (context, error, stackTrace) {
+                                            if (kDebugMode) {
+                                              print('Error loading image: ${poster.imageUrl}');
+                                              print('Error details: $error');
+                                            }
+                                            return Container(
+                                              color: Colors.grey.shade200,
+                                              child: Center(
+                                                child: Column(
+                                                  mainAxisAlignment: MainAxisAlignment.center,
+                                                  children: [
+                                                    Icon(
+                                                      Icons.error_outline,
+                                                      size: 50,
+                                                      color: Colors.grey.shade400,
+                                                    ),
+                                                    const SizedBox(height: 8),
+                                                    Text(
+                                                      'Kesalahan Gambar',
+                                                      style: TextStyle(
+                                                        color: Colors.grey.shade600,
+                                                        fontSize: 12,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            );
+                                          },
+                                        ),
                     ),
                   ),
                 ),
-              ),
               Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Text(
@@ -473,7 +476,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                   borderRadius: BorderRadius.circular(28),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.blue.withOpacity(0.4),
+                      color: Colors.blue.withAlpha((0.4 * 255).round()),
                       blurRadius: 8,
                       spreadRadius: 2,
                       offset: const Offset(0, 4),
@@ -525,10 +528,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                 backgroundColor: Colors.deepPurple,
                 actions: [
                   IconButton(
-                    icon: const Icon(
-                      Icons.school_rounded,
-                      color: Colors.white,
-                    ),
+                    icon: const Icon(Icons.school_rounded, color: Colors.white),
                     onPressed: () {
                       Navigator.push(
                         context,
@@ -672,29 +672,35 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                   Row(
                                     children: [
                                       Expanded(
-                                        child: FutureBuilder<
-                                            List<EducationalPoster>>(
-                                          future: _postersFuture,
-                                          builder: (context, snapshot) {
-                                            return _buildStatsCard(
-                                              title: 'Poster\nTersedia',
-                                              value:
-                                                  '${snapshot.data?.length ?? 0}',
-                                              icon: Icons.image_rounded,
-                                              color: Colors.orange,
-                                              onTap: () {
-                                                // Scroll to posters section
-                                                _mainScrollController.animateTo(
-                                                  650,
-                                                  duration: const Duration(
-                                                    milliseconds: 800,
-                                                  ),
-                                                  curve: Curves.easeInOut,
+                                        child:
+                                            FutureBuilder<
+                                              List<EducationalPoster>
+                                            >(
+                                              future: _postersFuture,
+                                              builder: (context, snapshot) {
+                                                return _buildStatsCard(
+                                                  title: 'Poster\nTersedia',
+                                                  value:
+                                                      '${snapshot.data?.length ?? 0}',
+                                                  icon: Icons.image_rounded,
+                                                  color: Colors.orange,
+                                                  onTap: () {
+                                                    // Scroll to posters section
+                                                    _mainScrollController
+                                                        .animateTo(
+                                                          650,
+                                                          duration:
+                                                              const Duration(
+                                                                milliseconds:
+                                                                    800,
+                                                              ),
+                                                          curve:
+                                                              Curves.easeInOut,
+                                                        );
+                                                  },
                                                 );
                                               },
-                                            );
-                                          },
-                                        ),
+                                            ),
                                       ),
                                       const SizedBox(width: 12),
                                       Expanded(
@@ -743,9 +749,9 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                                   MaterialPageRoute(
                                                     builder: (context) =>
                                                         const VideoListPage(
-                                                      bucketId: DataProvider
-                                                          .mediaBucketId,
-                                                    ),
+                                                          bucketId: DataProvider
+                                                              .mediaBucketId,
+                                                        ),
                                                   ),
                                                 );
                                               },
@@ -1007,16 +1013,15 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                   itemBuilder: (context, index) {
                                     final poster = posters[index];
                                     if (index < posters.length - 1) {
-                                      precacheImage(
-                                        CachedNetworkImageProvider(
-                                          posters[index + 1].imageUrl,
-                                          headers: const {
-                                            'X-Requested-With':
-                                                'XMLHttpRequest',
-                                          },
-                                        ),
-                                        context,
-                                      );
+                                          precacheImage(
+                                            NetworkImage(
+                                              posters[index + 1].imageUrl,
+                                              headers: const {
+                                                'X-Requested-With': 'XMLHttpRequest',
+                                              },
+                                            ),
+                                            context,
+                                          );
                                     }
                                     return _buildPosterItem(
                                       context: context,
@@ -1132,12 +1137,11 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                                 decoration: BoxDecoration(
                                                   color: Colors.red.shade50,
                                                   borderRadius:
-                                                      const BorderRadius
-                                                          .vertical(
-                                                    top: Radius.circular(
-                                                      16,
-                                                    ),
-                                                  ),
+                                                      const BorderRadius.vertical(
+                                                        top: Radius.circular(
+                                                          16,
+                                                        ),
+                                                      ),
                                                 ),
                                                 child: Center(
                                                   child: Icon(

@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:myapp/home/models/bmi_record.dart';
-import 'package:myapp/services/database_service.dart';
+import 'package:myapp/services/appwrite_service.dart';
 
 class BMICalculatorPage extends StatefulWidget {
-  const BMICalculatorPage({Key? key}) : super(key: key);
+  const BMICalculatorPage({super.key});
 
   @override
-  _BMICalculatorPageState createState() => _BMICalculatorPageState();
+  BMICalculatorPageState createState() => BMICalculatorPageState();
 }
 
-class _BMICalculatorPageState extends State<BMICalculatorPage> {
+class BMICalculatorPageState extends State<BMICalculatorPage> {
   final _formKey = GlobalKey<FormState>();
   final _weightController = TextEditingController();
   final _heightController = TextEditingController();
@@ -25,14 +25,16 @@ class _BMICalculatorPageState extends State<BMICalculatorPage> {
   Future<void> _loadBMIHistory() async {
     setState(() => _isLoading = true);
     try {
-      final records = await DatabaseService.instance.getAllBMIRecords();
+      final records = await AppwriteService.getBMIRecords();
       setState(() {
         _bmiHistory = records;
       });
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Gagal memuat riwayat BMI: $e')),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Gagal memuat riwayat BMI: $e')));
+      }
     } finally {
       setState(() => _isLoading = false);
     }
@@ -58,7 +60,7 @@ class _BMICalculatorPageState extends State<BMICalculatorPage> {
     );
 
     try {
-      await DatabaseService.instance.insertBMIRecord(record);
+      await AppwriteService.createBMIRecord(record);
       await _loadBMIHistory();
       _weightController.clear();
       _heightController.clear();
@@ -70,27 +72,27 @@ class _BMICalculatorPageState extends State<BMICalculatorPage> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Gagal menyimpan data BMI: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Gagal menyimpan data BMI: $e')));
       }
     }
   }
 
-  Future<void> _deleteBMIRecord(int id) async {
+  Future<void> _deleteBMIRecord(String id) async {
     try {
-      await DatabaseService.instance.deleteBMIRecord(id);
+      await AppwriteService.deleteBMIRecord(id);
       await _loadBMIHistory();
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Data berhasil dihapus')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Data berhasil dihapus')));
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Gagal menghapus data: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Gagal menghapus data: $e')));
       }
     }
   }
@@ -98,9 +100,7 @@ class _BMICalculatorPageState extends State<BMICalculatorPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Kalkulator BMI'),
-      ),
+      appBar: AppBar(title: const Text('Kalkulator BMI')),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: SingleChildScrollView(
@@ -159,52 +159,50 @@ class _BMICalculatorPageState extends State<BMICalculatorPage> {
               const SizedBox(height: 24),
               const Text(
                 'Riwayat BMI',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 8),
               _isLoading
                   ? const Center(child: CircularProgressIndicator())
                   : _bmiHistory.isEmpty
-                      ? const Center(
-                          child: Text('Belum ada riwayat BMI'),
-                        )
-                      : ListView.builder(
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          itemCount: _bmiHistory.length,
-                          itemBuilder: (context, index) {
-                            final record = _bmiHistory[index];
-                            return Card(
-                              child: ListTile(
-                                title: Text(
-                                  'BMI: ${record.bmi.toStringAsFixed(1)} - ${record.getBMICategory()}',
-                                  style: const TextStyle(
-                                      fontWeight: FontWeight.bold),
-                                ),
-                                subtitle: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                        'Berat: ${record.weight.toStringAsFixed(1)} kg'),
-                                    Text(
-                                        'Tinggi: ${record.height.toStringAsFixed(1)} cm'),
-                                    Text(
-                                        'Berat Ideal: ${record.idealWeight.toStringAsFixed(1)} kg'),
-                                    Text(
-                                        'Tanggal: ${_formatDate(record.date)}'),
-                                  ],
-                                ),
-                                trailing: IconButton(
-                                  icon: const Icon(Icons.delete),
-                                  onPressed: () => _deleteBMIRecord(record.id!),
-                                ),
+                  ? const Center(child: Text('Belum ada riwayat BMI'))
+                  : ListView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: _bmiHistory.length,
+                      itemBuilder: (context, index) {
+                        final record = _bmiHistory[index];
+                        return Card(
+                          child: ListTile(
+                            title: Text(
+                              'BMI: ${record.bmi.toStringAsFixed(1)} - ${record.getBMICategory()}',
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
                               ),
-                            );
-                          },
-                        ),
+                            ),
+                            subtitle: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Berat: ${record.weight.toStringAsFixed(1)} kg',
+                                ),
+                                Text(
+                                  'Tinggi: ${record.height.toStringAsFixed(1)} cm',
+                                ),
+                                Text(
+                                  'Berat Ideal: ${record.idealWeight.toStringAsFixed(1)} kg',
+                                ),
+                                Text('Tanggal: ${_formatDate(record.date)}'),
+                              ],
+                            ),
+                            trailing: IconButton(
+                              icon: const Icon(Icons.delete),
+                              onPressed: () => _deleteBMIRecord(record.id!),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
             ],
           ),
         ),
@@ -225,7 +223,7 @@ class _BMICalculatorPageState extends State<BMICalculatorPage> {
       'September',
       'Oktober',
       'November',
-      'Desember'
+      'Desember',
     ];
     return '${date.day} ${months[date.month - 1]} ${date.year} ${date.hour}:${date.minute.toString().padLeft(2, '0')}';
   }

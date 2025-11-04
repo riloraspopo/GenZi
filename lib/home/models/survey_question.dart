@@ -1,3 +1,5 @@
+import 'package:flutter/foundation.dart';
+
 class SurveyQuestion {
   final String id;
   final String question;
@@ -13,13 +15,17 @@ class SurveyQuestion {
 
   factory SurveyQuestion.fromMap(Map<String, dynamic> map) {
     // Print the raw map data for debugging
-    print('Converting map to SurveyQuestion: $map');
+    if (kDebugMode) {
+      print('Converting map to SurveyQuestion: $map');
+    }
 
     // Safely extract options with type checking
     List<String> extractOptions(dynamic optionsData) {
       if (optionsData == null) return [];
       if (optionsData is! List) {
-        print('Warning: options is not a List: ${optionsData.runtimeType}');
+        if (kDebugMode) {
+          print('Warning: options is not a List: ${optionsData.runtimeType}');
+        }
         return [];
       }
       return optionsData.map((option) => option?.toString() ?? '').toList();
@@ -31,11 +37,13 @@ class SurveyQuestion {
     final options = extractOptions(map['options']);
     final selectedOption = map['selectedOption']?.toString();
 
-    print('Processed fields:');
-    print('id: $id');
-    print('question: $question');
-    print('options: $options');
-    print('selectedOption: $selectedOption');
+    if (kDebugMode) {
+      print('Processed fields:');
+      print('id: $id');
+      print('question: $question');
+      print('options: $options');
+      print('selectedOption: $selectedOption');
+    }
 
     return SurveyQuestion(
       id: id,

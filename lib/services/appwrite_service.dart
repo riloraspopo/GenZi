@@ -1,6 +1,8 @@
 import 'package:appwrite/appwrite.dart';
 import 'package:appwrite/models.dart' as models;
+import 'package:flutter/foundation.dart';
 import 'package:logging/logging.dart';
+import 'package:myapp/home/models/bmi_record.dart';
 import '../constant.dart';
 
 class AppwriteService {
@@ -30,7 +32,9 @@ class AppwriteService {
 
   // Auth Methods
   static Future<models.Session> createEmailSession(
-      String email, String password) async {
+    String email,
+    String password,
+  ) async {
     try {
       final session = await account.createEmailPasswordSession(
         email: email,
@@ -45,7 +49,10 @@ class AppwriteService {
   }
 
   static Future<models.User> createTeacherAccount(
-      String email, String password, String name) async {
+    String email,
+    String password,
+    String name,
+  ) async {
     try {
       final user = await account.create(
         userId: ID.unique(),
@@ -110,22 +117,22 @@ class AppwriteService {
       final testQuestions = [
         {
           'question': 'Bagaimana pemahaman siswa tentang materi gizi seimbang?',
-          'options': ['Sangat Baik', 'Baik', 'Cukup', 'Perlu Peningkatan']
+          'options': ['Sangat Baik', 'Baik', 'Cukup', 'Perlu Peningkatan'],
         },
         {
           'question':
               'Seberapa aktif partisipasi siswa dalam kegiatan pembelajaran gizi?',
-          'options': ['Sangat Aktif', 'Aktif', 'Cukup Aktif', 'Kurang Aktif']
+          'options': ['Sangat Aktif', 'Aktif', 'Cukup Aktif', 'Kurang Aktif'],
         },
         {
           'question':
               'Apakah siswa menerapkan pengetahuan gizi dalam kehidupan sehari-hari?',
-          'options': ['Selalu', 'Sering', 'Kadang-kadang', 'Jarang']
+          'options': ['Selalu', 'Sering', 'Kadang-kadang', 'Jarang'],
         },
         {
           'question':
               'Bagaimana tingkat kesadaran siswa tentang pentingnya makanan bergizi?',
-          'options': ['Sangat Tinggi', 'Tinggi', 'Sedang', 'Rendah']
+          'options': ['Sangat Tinggi', 'Tinggi', 'Sedang', 'Rendah'],
         },
         {
           'question':
@@ -134,9 +141,9 @@ class AppwriteService {
             'Sangat Efektif',
             'Efektif',
             'Cukup Efektif',
-            'Perlu Perbaikan'
-          ]
-        }
+            'Perlu Perbaikan',
+          ],
+        },
       ];
 
       for (var question in testQuestions) {
@@ -159,8 +166,6 @@ class AppwriteService {
   // Survey Methods
   static Future<List<Map<String, dynamic>>> getSurveyQuestions() async {
     try {
-      print('1');
-
       // await databases.createDocument(
       //   databaseId: AppwriteConstants.DATABASE_ID,
       //   collectionId: AppwriteConstants.SURVEY_COLLECTION_ID,
@@ -178,17 +183,19 @@ class AppwriteService {
         databaseId: AppwriteConstants.DATABASE_ID,
         collectionId: AppwriteConstants.SURVEY_COLLECTION_ID,
       );
-      print('2');
-
       _log.info('Retrieved ${result.documents.length} survey questions');
 
       // Convert documents to maps with proper type checking
-      print('Processing ${result.documents.length} documents from Appwrite');
+      if (kDebugMode) {
+        print('Processing ${result.documents.length} documents from Appwrite');
+      }
       return result.documents.map((doc) {
         final data = doc.data;
         // Print the raw data for debugging
-        print('Processing document ${doc.$id}:');
-        print('Raw data: $data');
+        if (kDebugMode) {
+          print('Processing document ${doc.$id}:');
+          print('Raw data: $data');
+        }
 
         // Safely extract and convert the data with proper null checking
         dynamic rawOptions = data['options'];
@@ -198,8 +205,11 @@ class AppwriteService {
           if (rawOptions is List) {
             options = rawOptions.map((opt) => opt?.toString() ?? '').toList();
           } else {
-            print(
-                'Warning: options field is not a List: ${rawOptions.runtimeType}');
+            if (kDebugMode) {
+              print(
+                'Warning: options field is not a List: ${rawOptions.runtimeType}',
+              );
+            }
           }
         }
 
@@ -210,19 +220,27 @@ class AppwriteService {
           'selectedOption': null,
         };
 
-        print('Processed data: $processedData');
+        if (kDebugMode) {
+          print('Processed data: $processedData');
+        }
         return processedData;
       }).toList();
     } catch (e) {
-      print('errr');
-      print(e);
+      if (kDebugMode) {
+        print(e);
+      }
       _log.severe('Error getting survey questions: $e');
       rethrow;
     }
   }
 
-  static Future<void> submitSurveyResponse(String questionId, String response,
-      String userId, String question, String submissionId) async {
+  static Future<void> submitSurveyResponse(
+    String questionId,
+    String response,
+    String userId,
+    String question,
+    String submissionId,
+  ) async {
     try {
       await databases.createDocument(
         databaseId: AppwriteConstants.DATABASE_ID,
@@ -246,19 +264,18 @@ class AppwriteService {
 
   // Get user's survey history grouped by submission
   static Future<List<Map<String, dynamic>>> getUserSurveyHistory(
-      String userId) async {
+    String userId,
+  ) async {
     try {
       final result = await databases.listDocuments(
         databaseId: AppwriteConstants.DATABASE_ID,
         collectionId: AppwriteConstants.SURVEY_RESPONSES_COLLECTION_ID,
-        queries: [
-          Query.equal('userId', userId),
-          Query.orderDesc('timestamp'),
-        ],
+        queries: [Query.equal('userId', userId), Query.orderDesc('timestamp')],
       );
 
       _log.info(
-          'Retrieved ${result.documents.length} survey responses for user: $userId');
+        'Retrieved ${result.documents.length} survey responses for user: $userId',
+      );
 
       // First, create a map of submissionId to list of responses
       Map<String, List<Map<String, dynamic>>> submissionGroups = {};
@@ -314,10 +331,7 @@ class AppwriteService {
     try {
       final result = await _storage.listFiles(
         bucketId: bucketId,
-        queries: [
-          Query.limit(100),
-          Query.offset(0),
-        ],
+        queries: [Query.limit(100), Query.offset(0)],
       );
       _log.info('Found ${result.files.length} files in bucket $bucketId');
       return result.files;
@@ -331,10 +345,7 @@ class AppwriteService {
     try {
       final result = await _storage.listFiles(
         bucketId: bucketId,
-        queries: [
-          Query.limit(100),
-          Query.offset(0),
-        ],
+        queries: [Query.limit(100), Query.offset(0)],
       );
 
       // Filter for video files only
@@ -362,5 +373,76 @@ class AppwriteService {
 
   static String getVideoDownloadUrl(String bucketId, String fileId) {
     return '${AppwriteConstants.APPWRITE_PUBLIC_ENDPOINT}/storage/buckets/$bucketId/files/$fileId/download?project=${AppwriteConstants.APPWRITE_PROJECT_ID}';
+  }
+
+  // BMI Record Methods
+  static Future<void> createBMIRecord(BMIRecord record) async {
+    try {
+      await databases.createDocument(
+        databaseId: AppwriteConstants.DATABASE_ID,
+        collectionId: AppwriteConstants.BMI_RECORDS_COLLECTION_ID,
+        documentId: ID.unique(),
+        data: record.toMap(),
+      );
+      _log.info('BMI record created');
+    } catch (e) {
+      _log.severe('Error creating BMI record: $e');
+      rethrow;
+    }
+  }
+
+  static Future<List<BMIRecord>> getBMIRecords() async {
+    try {
+      final result = await databases.listDocuments(
+        databaseId: AppwriteConstants.DATABASE_ID,
+        collectionId: AppwriteConstants.BMI_RECORDS_COLLECTION_ID,
+        queries: [Query.orderDesc('date')],
+      );
+      _log.info('Retrieved ${result.documents.length} BMI records');
+      
+      return result.documents.map((doc) {
+        final data = doc.data;
+        return BMIRecord.fromMap({
+          'id': doc.$id,
+          ...data,
+        });
+      }).toList();
+    } catch (e) {
+      _log.severe('Error getting BMI records: $e');
+      rethrow;
+    }
+  }
+
+  static Future<void> updateBMIRecord(BMIRecord record) async {
+    try {
+      if (record.id == null) {
+        throw Exception('Record ID is required for update');
+      }
+      
+      await databases.updateDocument(
+        databaseId: AppwriteConstants.DATABASE_ID,
+        collectionId: AppwriteConstants.BMI_RECORDS_COLLECTION_ID,
+        documentId: record.id!,
+        data: record.toMap(),
+      );
+      _log.info('BMI record updated: ${record.id}');
+    } catch (e) {
+      _log.severe('Error updating BMI record: $e');
+      rethrow;
+    }
+  }
+
+  static Future<void> deleteBMIRecord(String recordId) async {
+    try {
+      await databases.deleteDocument(
+        databaseId: AppwriteConstants.DATABASE_ID,
+        collectionId: AppwriteConstants.BMI_RECORDS_COLLECTION_ID,
+        documentId: recordId,
+      );
+      _log.info('BMI record deleted: $recordId');
+    } catch (e) {
+      _log.severe('Error deleting BMI record: $e');
+      rethrow;
+    }
   }
 }

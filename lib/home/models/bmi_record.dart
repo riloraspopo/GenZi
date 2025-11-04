@@ -1,5 +1,5 @@
 class BMIRecord {
-  final int? id;
+  final String? id;  // Changed to String for Appwrite document ID
   final double weight;
   final double height;
   final double bmi;
@@ -50,7 +50,7 @@ class BMIRecord {
   }
 
   BMIRecord copyWith({
-    int? id,
+    String? id,
     double? weight,
     double? height,
     double? bmi,

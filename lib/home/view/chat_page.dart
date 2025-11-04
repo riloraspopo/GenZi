@@ -26,7 +26,8 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
     // Add initial greeting message
     _messages.add(
       ChatMessage(
-        text: 'Halo! Saya adalah asisten AI dengan spesialisasi di bidang gizi. Anda bisa bertanya tentang apa saja, tetapi saya memiliki pengetahuan khusus dalam bidang gizi dan kesehatan 😊',
+        text:
+            'Halo! Saya adalah asisten AI dengan spesialisasi di bidang gizi. Anda bisa bertanya tentang apa saja, tetapi saya memiliki pengetahuan khusus dalam bidang gizi dan kesehatan 😊',
         isUser: false,
         animate: true,
       ),
@@ -52,10 +53,7 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
           children: [
             const Text(
               'Chat dengan AI',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
             Text(
               _isLoading ? 'Sedang mengetik...' : 'Online',
@@ -79,7 +77,7 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
                   title: const Text('Tentang Chat AI'),
                   content: const Text(
                     'Asisten AI ini dapat membantu Anda dengan berbagai pertanyaan, dengan spesialisasi khusus di bidang gizi dan kesehatan. '
-                    'Gunakan bahasa yang jelas dan spesifik untuk hasil yang lebih baik.'
+                    'Gunakan bahasa yang jelas dan spesifik untuk hasil yang lebih baik.',
                   ),
                   actions: [
                     TextButton(
@@ -98,9 +96,9 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: isDark 
-              ? [Colors.grey[900]!, Colors.black]
-              : [Colors.blue.shade50, Colors.white],
+            colors: isDark
+                ? [Colors.grey[900]!, Colors.black]
+                : [Colors.blue.shade50, Colors.white],
           ),
         ),
         child: Column(
@@ -109,7 +107,10 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
               child: ListView.builder(
                 controller: _scrollController,
                 reverse: true,
-                padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+                padding: const EdgeInsets.symmetric(
+                  vertical: 16,
+                  horizontal: 12,
+                ),
                 itemCount: _messages.length,
                 itemBuilder: (context, index) {
                   final message = _messages[index];
@@ -125,7 +126,7 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
                 color: isDark ? Colors.grey[900] : Colors.white,
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.05),
+                    color: Colors.black.withAlpha((0.05 * 255).round()),
                     blurRadius: 10,
                     offset: const Offset(0, -3),
                   ),
@@ -142,7 +143,9 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
                           color: isDark ? Colors.grey[800] : Colors.grey[100],
                           borderRadius: BorderRadius.circular(24),
                           border: Border.all(
-                            color: isDark ? Colors.grey[700]! : Colors.grey[300]!,
+                            color: isDark
+                                ? Colors.grey[700]!
+                                : Colors.grey[300]!,
                           ),
                         ),
                         child: TextField(
@@ -150,7 +153,9 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
                           decoration: InputDecoration(
                             hintText: 'Ketik pesan...',
                             hintStyle: TextStyle(
-                              color: isDark ? Colors.grey[400] : Colors.grey[600],
+                              color: isDark
+                                  ? Colors.grey[400]
+                                  : Colors.grey[600],
                             ),
                             contentPadding: const EdgeInsets.symmetric(
                               horizontal: 20,
@@ -176,7 +181,7 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
                         shape: BoxShape.circle,
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.blue.withOpacity(0.3),
+                            color: Colors.blue.withAlpha((0.3 * 255).round()),
                             blurRadius: 8,
                             offset: const Offset(0, 4),
                           ),
@@ -205,11 +210,10 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
     _messageController.clear();
 
     setState(() {
-      _messages.insert(0, ChatMessage(
-        text: userMessage,
-        isUser: true,
-        animate: true,
-      ));
+      _messages.insert(
+        0,
+        ChatMessage(text: userMessage, isUser: true, animate: true),
+      );
       _isLoading = true;
     });
 
@@ -217,11 +221,10 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
       final response = await GeminiService.sendMessage(userMessage);
       if (mounted) {
         setState(() {
-          _messages.insert(0, ChatMessage(
-            text: response,
-            isUser: false,
-            animate: true,
-          ));
+          _messages.insert(
+            0,
+            ChatMessage(text: response, isUser: false, animate: true),
+          );
         });
       }
     } catch (e) {
@@ -248,11 +251,7 @@ class ChatMessage {
   final bool isUser;
   final bool animate;
 
-  ChatMessage({
-    required this.text,
-    required this.isUser,
-    this.animate = false,
-  });
+  ChatMessage({required this.text, required this.isUser, this.animate = false});
 }
 
 class ChatBubble extends StatelessWidget {
@@ -272,8 +271,9 @@ class ChatBubble extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(bottom: 8.0),
       child: Row(
-        mainAxisAlignment:
-            message.isUser ? MainAxisAlignment.end : MainAxisAlignment.start,
+        mainAxisAlignment: message.isUser
+            ? MainAxisAlignment.end
+            : MainAxisAlignment.start,
         children: [
           if (!message.isUser) ...[
             Container(
@@ -296,10 +296,7 @@ class ChatBubble extends StatelessWidget {
                 left: message.isUser ? 64 : 0,
                 right: message.isUser ? 0 : 64,
               ),
-              padding: const EdgeInsets.symmetric(
-                horizontal: 16,
-                vertical: 12,
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               decoration: BoxDecoration(
                 color: message.isUser
                     ? (isDark ? Colors.blue.shade700 : Colors.blue)
@@ -307,7 +304,7 @@ class ChatBubble extends StatelessWidget {
                 borderRadius: BorderRadius.circular(20),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.05),
+                    color: Colors.black.withAlpha((0.05 * 255).round()),
                     blurRadius: 8,
                     offset: const Offset(0, 4),
                   ),
@@ -332,11 +329,7 @@ class ChatBubble extends StatelessWidget {
                 color: isDark ? Colors.blue.shade700 : Colors.blue,
                 shape: BoxShape.circle,
               ),
-              child: const Icon(
-                Icons.person,
-                color: Colors.white,
-                size: 20,
-              ),
+              child: const Icon(Icons.person, color: Colors.white, size: 20),
             ),
           ],
         ],

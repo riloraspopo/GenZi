@@ -1,9 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_pdfview/flutter_pdfview.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:dio/dio.dart';
-import 'package:path/path.dart' as path;
 
 class PdfViewerPage extends StatefulWidget {
   final String pdfUrl;
@@ -22,13 +19,14 @@ class _PdfViewerPageState extends State<PdfViewerPage> {
   String? errorMessage;
   int currentPage = 1;
   int totalPages = 0;
-  final Dio _dio = Dio();
 
   @override
   void initState() {
     super.initState();
     _downloadAndOpenPdf();
   }
+
+  final CacheService _cacheService = CacheService();
 
   Future<void> _downloadAndOpenPdf() async {
     try {
@@ -37,39 +35,20 @@ class _PdfViewerPageState extends State<PdfViewerPage> {
         hasError = false;
       });
 
-      // Get the temporary directory
-      final dir = await getTemporaryDirectory();
-      final fileName = path.basename(widget.pdfUrl);
-      final filePath = path.join(dir.path, fileName);
-      final file = File(filePath);
+      // Check cache first
+      File? cachedFile = await _cacheService.getCachedFile(widget.pdfUrl);
 
-      // Check if file exists in cache
-      if (await file.exists()) {
+      cachedFile ??= await _cacheService.cachePDF(widget.pdfUrl);
+
+      if (await cachedFile.exists()) {
         setState(() {
-          localPath = filePath;
-          isLoading = false;
-        });
-        return;
-      }
-
-      // Download the PDF
-      await _dio.download(
-        widget.pdfUrl,
-        filePath,
-        options: Options(
-          headers: {'X-Requested-With': 'XMLHttpRequest'},
-        ),
-      );
-
-      if (await file.exists()) {
-        setState(() {
-          localPath = filePath;
+          localPath = cachedFile?.path;
           isLoading = false;
         });
       } else {
         setState(() {
           hasError = true;
-          errorMessage = 'Gagal mengunduh PDF';
+          errorMessage = 'Gagal memuat PDF dari cache';
           isLoading = false;
         });
       }
@@ -178,11 +157,5 @@ class _PdfViewerPageState extends State<PdfViewerPage> {
     }
 
     return const Center(child: Text('Tidak dapat memuat PDF'));
-  }
-
-  @override
-  void dispose() {
-    _dio.close();
-    super.dispose();
   }
 }
