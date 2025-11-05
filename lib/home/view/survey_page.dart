@@ -1,9 +1,10 @@
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide RadioGroup;
 import 'package:myapp/home/models/survey_question.dart';
 import 'package:myapp/services/appwrite_service.dart';
 import 'package:appwrite/models.dart' as models;
 import 'package:myapp/home/view/survey_history_page.dart';
+import 'package:myapp/home/widgets/radio_group.dart';
 
 class SurveyPage extends StatefulWidget {
   const SurveyPage({super.key});
@@ -127,6 +128,7 @@ class SurveyPageState extends State<SurveyPage> {
           backgroundColor: Colors.green,
         ),
       );
+      Navigator.pop(context);
 
       // Clear responses
       setState(() {
@@ -254,18 +256,39 @@ class SurveyPageState extends State<SurveyPage> {
                                         ),
                                       ),
                                       const SizedBox(height: 16),
-                                      ...question.options.map((option) {
-                                        return RadioListTile<String>(
-                                          title: Text(option),
-                                          value: option,
-                                          groupValue: question.selectedOption,
-                                          onChanged: (value) {
-                                            setState(() {
-                                              question.selectedOption = value;
-                                            });
-                                          },
-                                        );
-                                      }),
+                                      RadioGroup<String>(
+                                        value: question.selectedOption,
+                                        onChanged: (value) {
+                                          setState(() {
+                                            question.selectedOption = value;
+                                          });
+                                        },
+                                        children: question.options.map((
+                                          option,
+                                        ) {
+                                          return RadioItem<String>(
+                                            value: option,
+                                            child: Text(
+                                              option,
+                                              style: TextStyle(
+                                                fontSize: 15,
+                                                color:
+                                                    question.selectedOption ==
+                                                        option
+                                                    ? Theme.of(
+                                                        context,
+                                                      ).primaryColor
+                                                    : Colors.black87,
+                                                fontWeight:
+                                                    question.selectedOption ==
+                                                        option
+                                                    ? FontWeight.w500
+                                                    : FontWeight.normal,
+                                              ),
+                                            ),
+                                          );
+                                        }).toList(),
+                                      ),
                                     ],
                                   ),
                                 ),
