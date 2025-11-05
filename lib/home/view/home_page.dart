@@ -138,7 +138,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
       // Clear CachedNetworkImage cache
 
-
       // Now fetch new data
       final posters = DataProvider.getPosters();
       final pdfs = DataProvider.getPdfResources();
@@ -392,50 +391,56 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                       top: Radius.circular(20),
                     ),
                     child: Image.network(
-                                          poster.imageUrl,
-                                          fit: BoxFit.cover,
-                                          headers: const {'X-Requested-With': 'XMLHttpRequest'},
-                                          loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
-                                            if (loadingProgress == null) return child;
-                                            return Shimmer.fromColors(
-                                              baseColor: Colors.grey[300]!,
-                                              highlightColor: Colors.grey[100]!,
-                                              child: Container(color: Colors.white),
-                                            );
-                                          },
-                                          errorBuilder: (context, error, stackTrace) {
-                                            if (kDebugMode) {
-                                              print('Error loading image: ${poster.imageUrl}');
-                                              print('Error details: $error');
-                                            }
-                                            return Container(
-                                              color: Colors.grey.shade200,
-                                              child: Center(
-                                                child: Column(
-                                                  mainAxisAlignment: MainAxisAlignment.center,
-                                                  children: [
-                                                    Icon(
-                                                      Icons.error_outline,
-                                                      size: 50,
-                                                      color: Colors.grey.shade400,
-                                                    ),
-                                                    const SizedBox(height: 8),
-                                                    Text(
-                                                      'Kesalahan Gambar',
-                                                      style: TextStyle(
-                                                        color: Colors.grey.shade600,
-                                                        fontSize: 12,
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                                              ),
-                                            );
-                                          },
-                                        ),
+                      width: double.infinity,
+                      poster.imageUrl,
+                      fit: BoxFit.cover,
+                      headers: const {'X-Requested-With': 'XMLHttpRequest'},
+                      loadingBuilder:
+                          (
+                            BuildContext context,
+                            Widget child,
+                            ImageChunkEvent? loadingProgress,
+                          ) {
+                            if (loadingProgress == null) return child;
+                            return Shimmer.fromColors(
+                              baseColor: Colors.grey[300]!,
+                              highlightColor: Colors.grey[100]!,
+                              child: Container(color: Colors.white),
+                            );
+                          },
+                      errorBuilder: (context, error, stackTrace) {
+                        if (kDebugMode) {
+                          print('Error loading image: ${poster.imageUrl}');
+                          print('Error details: $error');
+                        }
+                        return Container(
+                          color: Colors.grey.shade200,
+                          child: Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons.error_outline,
+                                  size: 50,
+                                  color: Colors.grey.shade400,
+                                ),
+                                const SizedBox(height: 8),
+                                Text(
+                                  'Kesalahan Gambar',
+                                  style: TextStyle(
+                                    color: Colors.grey.shade600,
+                                    fontSize: 12,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
                     ),
                   ),
                 ),
+              ),
               Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Text(
@@ -1013,15 +1018,16 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                   itemBuilder: (context, index) {
                                     final poster = posters[index];
                                     if (index < posters.length - 1) {
-                                          precacheImage(
-                                            NetworkImage(
-                                              posters[index + 1].imageUrl,
-                                              headers: const {
-                                                'X-Requested-With': 'XMLHttpRequest',
-                                              },
-                                            ),
-                                            context,
-                                          );
+                                      precacheImage(
+                                        NetworkImage(
+                                          posters[index + 1].imageUrl,
+                                          headers: const {
+                                            'X-Requested-With':
+                                                'XMLHttpRequest',
+                                          },
+                                        ),
+                                        context,
+                                      );
                                     }
                                     return _buildPosterItem(
                                       context: context,

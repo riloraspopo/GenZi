@@ -39,7 +39,8 @@ class _PdfViewerPageState extends State<PdfViewerPage> {
 
       // Get the temporary directory
       final dir = await getTemporaryDirectory();
-      final fileName = path.basename(widget.pdfUrl);
+      // Create unique filename using URL hash to prevent cache conflicts
+      final fileName = '${widget.pdfUrl.hashCode}_${path.basename(widget.pdfUrl)}';
       final filePath = path.join(dir.path, fileName);
       final file = File(filePath);
 
@@ -180,9 +181,23 @@ class _PdfViewerPageState extends State<PdfViewerPage> {
     return const Center(child: Text('Tidak dapat memuat PDF'));
   }
 
+  Future<void> _cleanupCache() async {
+    try {
+      if (localPath != null) {
+        final file = File(localPath!);
+        if (await file.exists()) {
+          await file.delete();
+        }
+      }
+    } catch (e) {
+      // Ignore cleanup errors
+    }
+  }
+
   @override
   void dispose() {
     _dio.close();
+    _cleanupCache(); // Cleanup cached file
     super.dispose();
   }
 }
