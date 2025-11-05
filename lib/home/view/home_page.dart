@@ -1205,7 +1205,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                           color: Colors.black87,
                         ),
                       ),
-                      const SizedBox(height: 16),
                       ListView.builder(
                         shrinkWrap: true,
                         physics: const NeverScrollableScrollPhysics(),
