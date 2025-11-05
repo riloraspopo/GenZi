@@ -245,7 +245,7 @@ class TeacherLoginPageState extends State<TeacherLoginPage> {
                     Padding(
                       padding: const EdgeInsets.only(top: 24.0),
                       child: Text(
-                        '© 2025 Edukasi MBG',
+                        '© 2025 GenZi',
                         style: TextStyle(color: Colors.grey[600], fontSize: 12),
                       ),
                     ),
