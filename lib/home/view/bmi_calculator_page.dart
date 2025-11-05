@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:myapp/home/models/bmi_record.dart';
-import 'package:myapp/services/appwrite_service.dart';
+import 'dart:convert';
+
+import 'package:shared_preferences/shared_preferences.dart';
 
 class BMICalculatorPage extends StatefulWidget {
   const BMICalculatorPage({super.key});
@@ -25,10 +27,17 @@ class BMICalculatorPageState extends State<BMICalculatorPage> {
   Future<void> _loadBMIHistory() async {
     setState(() => _isLoading = true);
     try {
-      final records = await AppwriteService.getBMIRecords();
-      setState(() {
-        _bmiHistory = records;
-      });
+      final prefs = await SharedPreferences.getInstance();
+      final String? recordsJson = prefs.getString('bmi_records');
+
+      if (recordsJson != null) {
+        final List<dynamic> recordsList = jsonDecode(recordsJson);
+        setState(() {
+          _bmiHistory = recordsList
+              .map((json) => BMIRecord.fromMap(json))
+              .toList();
+        });
+      }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(
@@ -37,6 +46,22 @@ class BMICalculatorPageState extends State<BMICalculatorPage> {
       }
     } finally {
       setState(() => _isLoading = false);
+    }
+  }
+
+  Future<void> _saveBMIHistory() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final List<Map<String, dynamic>> recordsList = _bmiHistory
+          .map((record) => record.toMap())
+          .toList();
+      await prefs.setString('bmi_records', jsonEncode(recordsList));
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Gagal menyimpan riwayat BMI: $e')),
+        );
+      }
     }
   }
 
@@ -52,6 +77,8 @@ class BMICalculatorPageState extends State<BMICalculatorPage> {
     final idealWeight = (height * 100 - 100) * 0.9;
 
     final record = BMIRecord(
+      id: DateTime.now().millisecondsSinceEpoch
+          .toString(), // Use timestamp as ID
       weight: weight,
       height: height * 100, // Store height in cm
       bmi: bmi,
@@ -59,41 +86,36 @@ class BMICalculatorPageState extends State<BMICalculatorPage> {
       date: DateTime.now(),
     );
 
-    try {
-      await AppwriteService.createBMIRecord(record);
-      await _loadBMIHistory();
-      _weightController.clear();
-      _heightController.clear();
+    setState(() {
+      _bmiHistory.insert(
+        0,
+        record,
+      ); // Add new record at the beginning of the list
+    });
 
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('BMI berhasil dihitung dan disimpan')),
-        );
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Gagal menyimpan data BMI: $e')));
-      }
+    await _saveBMIHistory(); // Save to SharedPreferences
+
+    _weightController.clear();
+    _heightController.clear();
+
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('BMI berhasil dihitung dan disimpan')),
+      );
     }
   }
 
   Future<void> _deleteBMIRecord(String id) async {
-    try {
-      await AppwriteService.deleteBMIRecord(id);
-      await _loadBMIHistory();
-      if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(const SnackBar(content: Text('Data berhasil dihapus')));
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Gagal menghapus data: $e')));
-      }
+    setState(() {
+      _bmiHistory.removeWhere((record) => record.id == id);
+    });
+
+    await _saveBMIHistory(); // Save changes to SharedPreferences
+
+    if (mounted) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Data berhasil dihapus')));
     }
   }
 
