@@ -399,13 +399,10 @@ class AppwriteService {
         queries: [Query.orderDesc('date')],
       );
       _log.info('Retrieved ${result.documents.length} BMI records');
-      
+
       return result.documents.map((doc) {
         final data = doc.data;
-        return BMIRecord.fromMap({
-          'id': doc.$id,
-          ...data,
-        });
+        return BMIRecord.fromMap({'id': doc.$id, ...data});
       }).toList();
     } catch (e) {
       _log.severe('Error getting BMI records: $e');
@@ -418,7 +415,7 @@ class AppwriteService {
       if (record.id == null) {
         throw Exception('Record ID is required for update');
       }
-      
+
       await databases.updateDocument(
         databaseId: AppwriteConstants.DATABASE_ID,
         collectionId: AppwriteConstants.BMI_RECORDS_COLLECTION_ID,
@@ -442,6 +439,82 @@ class AppwriteService {
       _log.info('BMI record deleted: $recordId');
     } catch (e) {
       _log.severe('Error deleting BMI record: $e');
+      rethrow;
+    }
+  }
+
+  // Complaint Methods
+  static Future<List<Map<String, dynamic>>> getComplaintHistory(
+    String userId,
+  ) async {
+    try {
+      final result = await databases.listDocuments(
+        databaseId: AppwriteConstants.DATABASE_ID,
+        collectionId: AppwriteConstants.COMPLAINTS_COLLECTION_ID,
+        queries: [Query.equal('userId', userId), Query.orderDesc('timestamp')],
+      );
+
+      _log.info(
+        'Retrieved ${result.documents.length} complaints for user: $userId',
+      );
+
+      return result.documents.map((doc) {
+        final data = doc.data;
+        return {
+          'id': doc.$id,
+          'description': data['description'] ?? '',
+          'imageId': data['imageId'],
+          'timestamp': data['timestamp'] ?? '',
+          'response': data['response'],
+          'responseTimestamp': data['responseTimestamp'],
+        };
+      }).toList();
+    } catch (e) {
+      _log.severe('Error getting complaint history: $e');
+      rethrow;
+    }
+  }
+
+  // Complaint Methods
+  static Future<models.File> uploadFile({
+    required String bucketId,
+    required String filePath,
+    required String userId,
+  }) async {
+    try {
+      final file = await _storage.createFile(
+        bucketId: bucketId,
+        fileId: ID.unique(),
+        file: InputFile.fromPath(path: filePath),
+      );
+      _log.info('File uploaded: ${file.$id}');
+      return file;
+    } catch (e) {
+      _log.severe('Error uploading file: $e');
+      rethrow;
+    }
+  }
+
+  static Future<void> createComplaint({
+    required String userId,
+    required String description,
+    String? imageId,
+  }) async {
+    try {
+      await databases.createDocument(
+        databaseId: AppwriteConstants.DATABASE_ID,
+        collectionId: AppwriteConstants.COMPLAINTS_COLLECTION_ID,
+        documentId: ID.unique(),
+        data: {
+          'userId': userId,
+          'description': description,
+          'imageId': imageId,
+          'timestamp': DateTime.now().toIso8601String(),
+        },
+      );
+      _log.info('Complaint created for user: $userId');
+    } catch (e) {
+      _log.severe('Error creating complaint: $e');
       rethrow;
     }
   }

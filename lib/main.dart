@@ -7,6 +7,8 @@ import 'package:myapp/home/view/teacher_login_page.dart';
 import 'package:myapp/home/view/survey_page.dart';
 import 'package:myapp/home/view/school_dashboard_page.dart';
 import 'package:myapp/home/view/survey_history_page.dart';
+import 'package:myapp/home/view/complaint_page.dart';
+import 'package:myapp/home/view/complaint_history_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -61,6 +63,8 @@ class MyApp extends StatelessWidget {
         '/survey': (context) => const SurveyPage(),
         '/dashboard': (context) => const SchoolDashboardPage(),
         '/survey-history': (context) => const SurveyHistoryPage(),
+        '/complaint': (context) => const ComplaintPage(),
+        '/complaint-history': (context) => const ComplaintHistoryPage(),
       },
     );
   }

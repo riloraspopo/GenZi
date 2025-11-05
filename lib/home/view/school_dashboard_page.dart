@@ -53,6 +53,8 @@ class SchoolDashboardPageState extends State<SchoolDashboardPage> {
     }
   }
 
+
+
   Widget _buildDashboardItem({
     required String title,
     required IconData icon,
@@ -157,6 +159,22 @@ class SchoolDashboardPageState extends State<SchoolDashboardPage> {
                     color: Colors.green,
                     onTap: () {
                       Navigator.pushNamed(context, '/survey-history');
+                    },
+                  ),
+                  _buildDashboardItem(
+                    title: 'Buat Pengaduan',
+                    icon: Icons.report_problem,
+                    color: Colors.orange,
+                    onTap: () {
+                      Navigator.pushNamed(context, '/complaint');
+                    },
+                  ),
+                  _buildDashboardItem(
+                    title: 'Riwayat Pengaduan',
+                    icon: Icons.history_edu,
+                    color: Colors.purple,
+                    onTap: () {
+                      Navigator.pushNamed(context, '/complaint-history');
                     },
                   ),
                 ],
