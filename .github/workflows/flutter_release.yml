@@ -38,8 +38,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      
-
       - name: Build Split-ABI
         run: flutter build apk --release --split-per-abi
 
@@ -57,6 +55,7 @@ jobs:
       - name: Upload APKs to Release
         uses: softprops/action-gh-release@v2
         with:
+          tag_name: v${{ env.VERSION }}   # ✅ Add this line
           files: |
             build/app/outputs/flutter-apk/app-armeabi-v7a-release.apk
             build/app/outputs/flutter-apk/app-arm64-v8a-release.apk
