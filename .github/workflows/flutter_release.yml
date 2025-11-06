@@ -1,14 +1,7 @@
 name: Flutter Release Split-ABI
 
 on:
-  workflow_dispatch:
-    inputs:
-      tag:
-        description: "Release Tag (e.g. v1.0.0)"
-        required: true
-      release_name:
-        description: "Release name"
-        required: true
+  workflow_dispatch:  # manual trigger still
 
 jobs:
   build:
@@ -21,10 +14,17 @@ jobs:
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: "3.35.2" # change to your version
+          flutter-version: "3.35.2"
 
       - name: Install Dependencies
         run: flutter pub get
+
+      - name: Extract Version
+        id: version
+        run: |
+          VERSION=$(grep '^version:' pubspec.yaml | sed 's/version: //')
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+          echo "Version extracted: $VERSION"
 
       - name: Build Split-ABI
         run: flutter build apk --release --split-per-abi
@@ -33,8 +33,8 @@ jobs:
         id: create_release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ github.event.inputs.tag }}
-          name: ${{ github.event.inputs.release_name }}
+          tag_name: v${{ env.VERSION }}
+          name: Release ${{ env.VERSION }}
           draft: false
           prerelease: false
         env:
