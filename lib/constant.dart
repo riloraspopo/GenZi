@@ -11,6 +11,7 @@ class AppwriteConstants {
   static const String BMI_RECORDS_COLLECTION_ID = "bmi_records";
   static const String COMPLAINTS_COLLECTION_ID = "complaints";
   static const String PENGADUAN_BUCKET_ID = "690affc800041274ad26";
+  static const String STUDY_TIPS_COLLECTION_ID = "tipsbelajar";
 }
 
 class GeminiConstants {

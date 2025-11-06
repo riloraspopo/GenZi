@@ -12,6 +12,7 @@ import 'package:myapp/home/view/mini_game_menu_page.dart';
 import 'package:myapp/home/view/video_list_page.dart';
 import 'package:myapp/home/view/bmi_calculator_page.dart';
 import 'package:myapp/home/view/teacher_login_page.dart';
+import 'package:myapp/home/widgets/study_tips_widget.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -1205,86 +1206,14 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                           color: Colors.black87,
                         ),
                       ),
-                      ListView.builder(
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        itemCount: DataProvider.getInformationItems().length,
-                        itemBuilder: (context, index) {
-                          final info =
-                              DataProvider.getInformationItems()[index];
-                          return AnimatedBuilder(
-                            animation: _cardScaleAnimation,
-                            builder: (context, child) {
-                              return Transform.scale(
-                                scale: _cardScaleAnimation.value,
-                                child: Card(
-                                  margin: const EdgeInsets.only(bottom: 16),
-                                  elevation: 4,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(16),
-                                  ),
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(20.0),
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Row(
-                                          children: [
-                                            Container(
-                                              width: 40,
-                                              height: 40,
-                                              decoration: BoxDecoration(
-                                                color: Colors.deepPurple
-                                                    .withValues(alpha: 0.1),
-                                                borderRadius:
-                                                    BorderRadius.circular(10),
-                                              ),
-                                              child: Icon(
-                                                Icons.lightbulb_rounded,
-                                                color:
-                                                    Colors.deepPurple.shade600,
-                                                size: 20,
-                                              ),
-                                            ),
-                                            const SizedBox(width: 12),
-                                            Expanded(
-                                              child: Text(
-                                                info.title,
-                                                style: const TextStyle(
-                                                  fontSize: 18,
-                                                  fontWeight: FontWeight.bold,
-                                                  color: Colors.black87,
-                                                ),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                        const SizedBox(height: 12),
-                                        Text(
-                                          info.content,
-                                          style: TextStyle(
-                                            color: Colors.grey.shade700,
-                                            fontSize: 14,
-                                            height: 1.5,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              );
-                            },
-                          );
-                        },
-                      ),
+                      const StudyTipsWidget(),
                     ],
                   ),
                 ),
               ),
 
               // Bottom spacing
-              const SliverToBoxAdapter(child: SizedBox(height: 24)),
+              const SliverToBoxAdapter(child: SizedBox(height: 64)),
             ],
           ),
         ),

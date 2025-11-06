@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:logging/logging.dart';
 import 'package:myapp/home/models/bmi_record.dart';
 import '../constant.dart';
+import '../home/models/study_tip.dart';
 
 class AppwriteService {
   static final _log = Logger('AppwriteService');
@@ -439,6 +440,31 @@ class AppwriteService {
       _log.info('BMI record deleted: $recordId');
     } catch (e) {
       _log.severe('Error deleting BMI record: $e');
+      rethrow;
+    }
+  }
+
+  // Study Tips Methods
+  static Future<List<StudyTip>> getStudyTips() async {
+    try {
+      final result = await databases.listDocuments(
+        databaseId: AppwriteConstants.DATABASE_ID,
+        collectionId: AppwriteConstants.STUDY_TIPS_COLLECTION_ID,
+        queries: [Query.orderDesc('createdAt')],
+      );
+      _log.info('Retrieved ${result.documents.length} study tips');
+
+      return result.documents.map((doc) {
+        final data = doc.data;
+        return StudyTip.fromJson({
+          '\$id': doc.$id,
+          'title': data['title'] ?? '',
+          'description': data['description'] ?? '',
+          'createdAt': data['createdAt'] ?? DateTime.now().toIso8601String(),
+        });
+      }).toList();
+    } catch (e) {
+      _log.severe('Error getting study tips: $e');
       rethrow;
     }
   }
