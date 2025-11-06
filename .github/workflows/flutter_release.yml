@@ -3,6 +3,9 @@ name: Flutter Release Split-ABI
 on:
   workflow_dispatch:  # manual trigger still
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
