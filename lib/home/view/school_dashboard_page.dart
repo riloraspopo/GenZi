@@ -51,9 +51,7 @@ class SchoolDashboardPageState extends State<SchoolDashboardPage> {
           ),
           TextButton(
             onPressed: () => Navigator.of(context).pop(true),
-            style: TextButton.styleFrom(
-              foregroundColor: Colors.red,
-            ),
+            style: TextButton.styleFrom(foregroundColor: Colors.red),
             child: const Text('Keluar'),
           ),
         ],
@@ -66,9 +64,9 @@ class SchoolDashboardPageState extends State<SchoolDashboardPage> {
     try {
       setState(() => _isLoading = true);
       await AppwriteService.deleteCurrentSession();
-      
+
       if (!mounted) return;
-      
+
       Navigator.of(context).pushReplacementNamed('/login');
     } catch (e) {
       if (!mounted) return;
@@ -84,8 +82,6 @@ class SchoolDashboardPageState extends State<SchoolDashboardPage> {
       }
     }
   }
-
-
 
   Widget _buildDashboardItem({
     required String title,
@@ -186,45 +182,68 @@ class SchoolDashboardPageState extends State<SchoolDashboardPage> {
               ),
             ),
             Expanded(
-              child: GridView.count(
-                crossAxisCount: 2,
-                padding: const EdgeInsets.all(16),
-                mainAxisSpacing: 16,
-                crossAxisSpacing: 16,
-                children: [
-                  _buildDashboardItem(
-                    title: 'Isi Survei',
-                    icon: Icons.assignment,
-                    color: Colors.blue,
-                    onTap: () {
-                      Navigator.pushNamed(context, '/survey');
+              child: Center(
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 1200),
+                  child: LayoutBuilder(
+                    builder: (context, constraints) {
+                      // Determine number of columns based on screen width
+                      int crossAxisCount = 2; // Default for mobile
+
+                      if (constraints.maxWidth > 1000) {
+                        crossAxisCount =
+                            4; // All items in one row on large screens
+                      } else if (constraints.maxWidth > 600) {
+                        crossAxisCount = 3; // 3 columns on medium screens
+                      }
+
+                      return GridView.count(
+                        crossAxisCount: crossAxisCount,
+                        padding: const EdgeInsets.all(16),
+                        mainAxisSpacing: 16,
+                        crossAxisSpacing: 16,
+                        childAspectRatio: 1.0,
+                        children: [
+                          _buildDashboardItem(
+                            title: 'Isi Survei',
+                            icon: Icons.assignment,
+                            color: Colors.blue,
+                            onTap: () {
+                              Navigator.pushNamed(context, '/survey');
+                            },
+                          ),
+                          _buildDashboardItem(
+                            title: 'Riwayat Survei',
+                            icon: Icons.history,
+                            color: Colors.green,
+                            onTap: () {
+                              Navigator.pushNamed(context, '/survey-history');
+                            },
+                          ),
+                          _buildDashboardItem(
+                            title: 'Buat Pengaduan',
+                            icon: Icons.report_problem,
+                            color: Colors.orange,
+                            onTap: () {
+                              Navigator.pushNamed(context, '/complaint');
+                            },
+                          ),
+                          _buildDashboardItem(
+                            title: 'Riwayat Pengaduan',
+                            icon: Icons.history_edu,
+                            color: Colors.purple,
+                            onTap: () {
+                              Navigator.pushNamed(
+                                context,
+                                '/complaint-history',
+                              );
+                            },
+                          ),
+                        ],
+                      );
                     },
                   ),
-                  _buildDashboardItem(
-                    title: 'Riwayat Survei',
-                    icon: Icons.history,
-                    color: Colors.green,
-                    onTap: () {
-                      Navigator.pushNamed(context, '/survey-history');
-                    },
-                  ),
-                  _buildDashboardItem(
-                    title: 'Buat Pengaduan',
-                    icon: Icons.report_problem,
-                    color: Colors.orange,
-                    onTap: () {
-                      Navigator.pushNamed(context, '/complaint');
-                    },
-                  ),
-                  _buildDashboardItem(
-                    title: 'Riwayat Pengaduan',
-                    icon: Icons.history_edu,
-                    color: Colors.purple,
-                    onTap: () {
-                      Navigator.pushNamed(context, '/complaint-history');
-                    },
-                  ),
-                ],
+                ),
               ),
             ),
           ],
