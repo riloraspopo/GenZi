@@ -27,7 +27,7 @@ class MyApp extends StatelessWidget {
     client.ping();
 
     return MaterialApp(
-      title: 'Educational App',
+      title: 'GenZi',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
           seedColor: Colors.deepPurple,
@@ -49,12 +49,8 @@ class MyApp extends StatelessWidget {
             fontWeight: FontWeight.bold,
             letterSpacing: 0.5,
           ),
-          titleMedium: TextStyle(
-            fontWeight: FontWeight.w500,
-          ),
-          bodyLarge: TextStyle(
-            height: 1.5,
-          ),
+          titleMedium: TextStyle(fontWeight: FontWeight.w500),
+          bodyLarge: TextStyle(height: 1.5),
         ),
       ),
       home: const HomePage(),

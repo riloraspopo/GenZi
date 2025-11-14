@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -1008,35 +1009,43 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                               // Poster list
                               SizedBox(
                                 height: 320,
-                                child: ListView.builder(
-                                  key: _postersListKey,
-                                  controller: _postersScrollController,
-                                  scrollDirection: Axis.horizontal,
-                                  padding: const EdgeInsets.symmetric(
-                                    vertical: 8,
+                                child: ScrollConfiguration(
+                                  behavior: ScrollConfiguration.of(context).copyWith(
+                                    dragDevices: {
+                                      PointerDeviceKind.touch,
+                                      PointerDeviceKind.mouse,
+                                    },
                                   ),
-                                  itemCount: posters.length,
-                                  itemBuilder: (context, index) {
-                                    final poster = posters[index];
-                                    if (index < posters.length - 1) {
-                                      precacheImage(
-                                        NetworkImage(
-                                          posters[index + 1].imageUrl,
-                                          headers: const {
-                                            'X-Requested-With':
-                                                'XMLHttpRequest',
-                                          },
-                                        ),
-                                        context,
+                                  child: ListView.builder(
+                                    key: _postersListKey,
+                                    controller: _postersScrollController,
+                                    scrollDirection: Axis.horizontal,
+                                    padding: const EdgeInsets.symmetric(
+                                      vertical: 8,
+                                    ),
+                                    itemCount: posters.length,
+                                    itemBuilder: (context, index) {
+                                      final poster = posters[index];
+                                      if (index < posters.length - 1) {
+                                        precacheImage(
+                                          NetworkImage(
+                                            posters[index + 1].imageUrl,
+                                            headers: const {
+                                              'X-Requested-With':
+                                                  'XMLHttpRequest',
+                                            },
+                                          ),
+                                          context,
+                                        );
+                                      }
+                                      return _buildPosterItem(
+                                        context: context,
+                                        poster: poster,
+                                        isFirst: index == 0,
+                                        isLast: index == posters.length - 1,
                                       );
-                                    }
-                                    return _buildPosterItem(
-                                      context: context,
-                                      poster: poster,
-                                      isFirst: index == 0,
-                                      isLast: index == posters.length - 1,
-                                    );
-                                  },
+                                    },
+                                  ),
                                 ),
                               ),
                             ],
@@ -1071,28 +1080,36 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                               ConnectionState.waiting) {
                             return SizedBox(
                               height: 160,
-                              child: ListView.builder(
-                                scrollDirection: Axis.horizontal,
-                                itemCount: 3,
-                                itemBuilder: (context, index) {
-                                  return Container(
-                                    width: 120,
-                                    margin: const EdgeInsets.only(right: 16),
-                                    child: Shimmer.fromColors(
-                                      baseColor: Colors.grey[300]!,
-                                      highlightColor: Colors.grey[100]!,
-                                      child: Card(
-                                        elevation: 2,
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(
-                                            12,
+                              child: ScrollConfiguration(
+                                behavior: ScrollConfiguration.of(context).copyWith(
+                                  dragDevices: {
+                                    PointerDeviceKind.touch,
+                                    PointerDeviceKind.mouse,
+                                  },
+                                ),
+                                child: ListView.builder(
+                                  scrollDirection: Axis.horizontal,
+                                  itemCount: 3,
+                                  itemBuilder: (context, index) {
+                                    return Container(
+                                      width: 120,
+                                      margin: const EdgeInsets.only(right: 16),
+                                      child: Shimmer.fromColors(
+                                        baseColor: Colors.grey[300]!,
+                                        highlightColor: Colors.grey[100]!,
+                                        child: Card(
+                                          elevation: 2,
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(
+                                              12,
+                                            ),
                                           ),
+                                          child: Container(),
                                         ),
-                                        child: Container(),
                                       ),
-                                    ),
-                                  );
-                                },
+                                    );
+                                  },
+                                ),
                               ),
                             );
                           }
@@ -1109,36 +1126,43 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
                           return SizedBox(
                             height: 160,
-                            child: ListView.builder(
-                              scrollDirection: Axis.horizontal,
-                              itemCount: pdfResources.length,
-                              itemBuilder: (context, index) {
-                                final pdf = pdfResources[index];
-                                return Padding(
-                                  padding: const EdgeInsets.only(right: 16),
-                                  child: SizedBox(
-                                    width: 120,
-                                    child: GestureDetector(
-                                      onTap: () {
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (context) => PdfViewerPage(
-                                              pdfUrl: pdf.pdfUrl,
-                                              title: pdf.title,
+                            child: ScrollConfiguration(
+                              behavior: ScrollConfiguration.of(context).copyWith(
+                                dragDevices: {
+                                  PointerDeviceKind.touch,
+                                  PointerDeviceKind.mouse,
+                                },
+                              ),
+                              child: ListView.builder(
+                                scrollDirection: Axis.horizontal,
+                                itemCount: pdfResources.length,
+                                itemBuilder: (context, index) {
+                                  final pdf = pdfResources[index];
+                                  return Padding(
+                                    padding: const EdgeInsets.only(right: 16),
+                                    child: SizedBox(
+                                      width: 120,
+                                      child: GestureDetector(
+                                        onTap: () {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) => PdfViewerPage(
+                                                pdfUrl: pdf.pdfUrl,
+                                                title: pdf.title,
+                                              ),
+                                            ),
+                                          );
+                                        },
+                                        child: Card(
+                                          elevation: 4,
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(
+                                              16,
                                             ),
                                           ),
-                                        );
-                                      },
-                                      child: Card(
-                                        elevation: 4,
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(
-                                            16,
-                                          ),
-                                        ),
-                                        child: Column(
-                                          children: [
+                                          child: Column(
+                                            children: [
                                             Expanded(
                                               child: Container(
                                                 decoration: BoxDecoration(
@@ -1183,6 +1207,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                 );
                               },
                             ),
+                          ),
                           );
                         },
                       ),
