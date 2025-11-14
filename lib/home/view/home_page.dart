@@ -1010,12 +1010,13 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                               SizedBox(
                                 height: 320,
                                 child: ScrollConfiguration(
-                                  behavior: ScrollConfiguration.of(context).copyWith(
-                                    dragDevices: {
-                                      PointerDeviceKind.touch,
-                                      PointerDeviceKind.mouse,
-                                    },
-                                  ),
+                                  behavior: ScrollConfiguration.of(context)
+                                      .copyWith(
+                                        dragDevices: {
+                                          PointerDeviceKind.touch,
+                                          PointerDeviceKind.mouse,
+                                        },
+                                      ),
                                   child: ListView.builder(
                                     key: _postersListKey,
                                     controller: _postersScrollController,
@@ -1081,12 +1082,13 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                             return SizedBox(
                               height: 160,
                               child: ScrollConfiguration(
-                                behavior: ScrollConfiguration.of(context).copyWith(
-                                  dragDevices: {
-                                    PointerDeviceKind.touch,
-                                    PointerDeviceKind.mouse,
-                                  },
-                                ),
+                                behavior: ScrollConfiguration.of(context)
+                                    .copyWith(
+                                      dragDevices: {
+                                        PointerDeviceKind.touch,
+                                        PointerDeviceKind.mouse,
+                                      },
+                                    ),
                                 child: ListView.builder(
                                   scrollDirection: Axis.horizontal,
                                   itemCount: 3,
@@ -1127,12 +1129,13 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                           return SizedBox(
                             height: 160,
                             child: ScrollConfiguration(
-                              behavior: ScrollConfiguration.of(context).copyWith(
-                                dragDevices: {
-                                  PointerDeviceKind.touch,
-                                  PointerDeviceKind.mouse,
-                                },
-                              ),
+                              behavior: ScrollConfiguration.of(context)
+                                  .copyWith(
+                                    dragDevices: {
+                                      PointerDeviceKind.touch,
+                                      PointerDeviceKind.mouse,
+                                    },
+                                  ),
                               child: ListView.builder(
                                 scrollDirection: Axis.horizontal,
                                 itemCount: pdfResources.length,
@@ -1147,10 +1150,11 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                           Navigator.push(
                                             context,
                                             MaterialPageRoute(
-                                              builder: (context) => PdfViewerPage(
-                                                pdfUrl: pdf.pdfUrl,
-                                                title: pdf.title,
-                                              ),
+                                              builder: (context) =>
+                                                  PdfViewerPage(
+                                                    pdfUrl: pdf.pdfUrl,
+                                                    title: pdf.title,
+                                                  ),
                                             ),
                                           );
                                         },
@@ -1163,51 +1167,53 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                           ),
                                           child: Column(
                                             children: [
-                                            Expanded(
-                                              child: Container(
-                                                decoration: BoxDecoration(
-                                                  color: Colors.red.shade50,
-                                                  borderRadius:
-                                                      const BorderRadius.vertical(
-                                                        top: Radius.circular(
-                                                          16,
+                                              Expanded(
+                                                child: Container(
+                                                  decoration: BoxDecoration(
+                                                    color: Colors.red.shade50,
+                                                    borderRadius:
+                                                        const BorderRadius.vertical(
+                                                          top: Radius.circular(
+                                                            16,
+                                                          ),
                                                         ),
-                                                      ),
-                                                ),
-                                                child: Center(
-                                                  child: Icon(
-                                                    Icons
-                                                        .picture_as_pdf_rounded,
-                                                    size: 40,
-                                                    color: Colors.red.shade400,
+                                                  ),
+                                                  child: Center(
+                                                    child: Icon(
+                                                      Icons
+                                                          .picture_as_pdf_rounded,
+                                                      size: 40,
+                                                      color:
+                                                          Colors.red.shade400,
+                                                    ),
                                                   ),
                                                 ),
                                               ),
-                                            ),
-                                            Padding(
-                                              padding: const EdgeInsets.all(
-                                                12.0,
-                                              ),
-                                              child: Text(
-                                                pdf.title,
-                                                textAlign: TextAlign.center,
-                                                style: const TextStyle(
-                                                  fontWeight: FontWeight.w600,
-                                                  fontSize: 12,
+                                              Padding(
+                                                padding: const EdgeInsets.all(
+                                                  12.0,
                                                 ),
-                                                maxLines: 2,
-                                                overflow: TextOverflow.ellipsis,
+                                                child: Text(
+                                                  pdf.title,
+                                                  textAlign: TextAlign.center,
+                                                  style: const TextStyle(
+                                                    fontWeight: FontWeight.w600,
+                                                    fontSize: 12,
+                                                  ),
+                                                  maxLines: 2,
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                ),
                                               ),
-                                            ),
-                                          ],
+                                            ],
+                                          ),
                                         ),
                                       ),
                                     ),
-                                  ),
-                                );
-                              },
+                                  );
+                                },
+                              ),
                             ),
-                          ),
                           );
                         },
                       ),

@@ -83,7 +83,9 @@ class _StudyTipsWidgetState extends State<StudyTipsWidget> {
                         itemBuilder: (context, index) {
                           final tip = tips[index];
                           return Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 16.0,
+                            ),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
