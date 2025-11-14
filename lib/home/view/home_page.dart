@@ -303,7 +303,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           child: GestureDetector(
             onTap: onTap,
             child: Container(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(16),
@@ -319,15 +319,15 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Container(
-                    width: 40,
-                    height: 40,
+                    width: 36,
+                    height: 36,
                     decoration: BoxDecoration(
                       color: color.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(10),
                     ),
-                    child: Icon(icon, size: 20, color: color),
+                    child: Icon(icon, size: 18, color: color),
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 6),
                   Text(
                     value,
                     style: TextStyle(
@@ -633,9 +633,9 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                   Row(
                                     children: [
                                       Container(
-                                        width: 60,
-                                        height: 60,
-                                        padding: const EdgeInsets.all(8),
+                                        width: 50,
+                                        height: 50,
+                                        padding: const EdgeInsets.all(6),
                                         decoration: BoxDecoration(
                                           color: Colors.white.withValues(
                                             alpha: 0.15,
@@ -647,7 +647,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                           fit: BoxFit.contain,
                                         ),
                                       ),
-                                      const SizedBox(width: 16),
+                                      const SizedBox(width: 12),
                                       Expanded(
                                         child: Column(
                                           crossAxisAlignment:
@@ -656,16 +656,16 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                             Text(
                                               _getGreeting(),
                                               style: const TextStyle(
-                                                fontSize: 24,
+                                                fontSize: 22,
                                                 fontWeight: FontWeight.w600,
                                                 color: Colors.white,
                                               ),
                                             ),
-                                            const SizedBox(height: 4),
+                                            const SizedBox(height: 2),
                                             const Text(
                                               'Mari belajar bersama hari ini!',
                                               style: TextStyle(
-                                                fontSize: 16,
+                                                fontSize: 14,
                                                 color: Colors.white70,
                                               ),
                                             ),
@@ -674,7 +674,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                       ),
                                     ],
                                   ),
-                                  const SizedBox(height: 20),
+                                  const SizedBox(height: 12),
                                   Row(
                                     children: [
                                       Expanded(
