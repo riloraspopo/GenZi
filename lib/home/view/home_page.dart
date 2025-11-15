@@ -568,7 +568,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 8),
                         child: Text(
-                          'Gen Zi',
+                          'GenZi',
                           style: TextStyle(
                             color: Colors.white,
                             fontWeight: FontWeight.bold,
