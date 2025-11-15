@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:image_picker/image_picker.dart';
 import 'package:myapp/constant.dart';
 import 'package:myapp/services/appwrite_service.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:path_provider/path_provider.dart';
 import 'dart:io';
+import 'dart:typed_data';
 
 class ComplaintPage extends StatefulWidget {
   const ComplaintPage({super.key});
@@ -16,6 +18,8 @@ class ComplaintPage extends StatefulWidget {
 class ComplaintPageState extends State<ComplaintPage> {
   final ImagePicker _picker = ImagePicker();
   File? _selectedImage;
+  Uint8List? _webImage;
+  String? _imagePath; // Store the path for both web and mobile
   final TextEditingController _complaintController = TextEditingController();
   bool _isSubmitting = false;
 
@@ -68,9 +72,6 @@ class ComplaintPageState extends State<ComplaintPage> {
       );
 
       if (image != null) {
-        final File imageFile = File(image.path);
-
-        // Show loading indicator while compressing
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
@@ -80,13 +81,29 @@ class ComplaintPageState extends State<ComplaintPage> {
           );
         }
 
-        // Compress image
-        final File? compressedImage = await _compressImage(imageFile);
+        if (kIsWeb) {
+          // For web, read as bytes
+          final bytes = await image.readAsBytes();
+          if (mounted) {
+            setState(() {
+              _webImage = bytes;
+              _imagePath = image.path;
+              _selectedImage = null;
+            });
+          }
+        } else {
+          // For mobile, use File
+          final File imageFile = File(image.path);
+          // Compress image
+          final File? compressedImage = await _compressImage(imageFile);
 
-        if (mounted) {
-          setState(() {
-            _selectedImage = compressedImage ?? imageFile;
-          });
+          if (mounted) {
+            setState(() {
+              _selectedImage = compressedImage ?? imageFile;
+              _imagePath = (compressedImage ?? imageFile).path;
+              _webImage = null;
+            });
+          }
         }
       }
     } catch (e) {
@@ -120,11 +137,15 @@ class ComplaintPageState extends State<ComplaintPage> {
 
       // Upload image first if selected
       String? fileId;
-      if (_selectedImage != null) {
+      if (_selectedImage != null || _webImage != null) {
         final file = await AppwriteService.uploadFile(
           bucketId: AppwriteConstants.PENGADUAN_BUCKET_ID,
-          filePath: _selectedImage!.path,
+          filePath: _imagePath!,
           userId: user.$id,
+          fileBytes: _webImage,
+          fileName: kIsWeb
+              ? 'complaint_${DateTime.now().millisecondsSinceEpoch}.jpg'
+              : null,
         );
         fileId = file.$id;
       }
@@ -145,12 +166,15 @@ class ComplaintPageState extends State<ComplaintPage> {
       // Reset form
       setState(() {
         _selectedImage = null;
+        _webImage = null;
+        _imagePath = null;
         _complaintController.clear();
       });
 
       // Go back to dashboard
       Navigator.of(context).pop();
     } catch (e) {
+      print(e);
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -193,7 +217,7 @@ class ComplaintPageState extends State<ComplaintPage> {
                 ),
                 child: Column(
                   children: [
-                    if (_selectedImage != null) ...[
+                    if (_selectedImage != null || _webImage != null) ...[
                       Stack(
                         alignment: Alignment.topRight,
                         children: [
@@ -201,12 +225,19 @@ class ComplaintPageState extends State<ComplaintPage> {
                             borderRadius: const BorderRadius.vertical(
                               top: Radius.circular(8),
                             ),
-                            child: Image.file(
-                              _selectedImage!,
-                              height: 200,
-                              width: double.infinity,
-                              fit: BoxFit.cover,
-                            ),
+                            child: kIsWeb && _webImage != null
+                                ? Image.memory(
+                                    _webImage!,
+                                    height: 200,
+                                    width: double.infinity,
+                                    fit: BoxFit.cover,
+                                  )
+                                : Image.file(
+                                    _selectedImage!,
+                                    height: 200,
+                                    width: double.infinity,
+                                    fit: BoxFit.cover,
+                                  ),
                           ),
                           Padding(
                             padding: const EdgeInsets.all(8.0),
@@ -225,6 +256,8 @@ class ComplaintPageState extends State<ComplaintPage> {
                                 onPressed: () {
                                   setState(() {
                                     _selectedImage = null;
+                                    _webImage = null;
+                                    _imagePath = null;
                                   });
                                 },
                               ),
@@ -244,7 +277,7 @@ class ComplaintPageState extends State<ComplaintPage> {
                               onPressed: _isSubmitting ? null : _pickImage,
                               icon: const Icon(Icons.photo_library),
                               label: Text(
-                                _selectedImage == null
+                                _selectedImage == null && _webImage == null
                                     ? 'Pilih Gambar dari Galeri'
                                     : 'Ganti Gambar',
                               ),

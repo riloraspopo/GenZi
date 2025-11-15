@@ -5,6 +5,7 @@ import 'package:logging/logging.dart';
 import 'package:myapp/home/models/bmi_record.dart';
 import '../constant.dart';
 import '../home/models/study_tip.dart';
+import 'dart:typed_data';
 
 class AppwriteService {
   static final _log = Logger('AppwriteService');
@@ -506,12 +507,19 @@ class AppwriteService {
     required String bucketId,
     required String filePath,
     required String userId,
+    Uint8List? fileBytes,
+    String? fileName,
   }) async {
     try {
       final file = await _storage.createFile(
         bucketId: bucketId,
         fileId: ID.unique(),
-        file: InputFile.fromPath(path: filePath),
+        file: kIsWeb && fileBytes != null
+            ? InputFile.fromBytes(
+                bytes: fileBytes,
+                filename: fileName ?? 'image.jpg',
+              )
+            : InputFile.fromPath(path: filePath),
       );
       _log.info('File uploaded: ${file.$id}');
       return file;
