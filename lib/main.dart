@@ -14,13 +14,11 @@ import 'package:myapp/home/view/complaint_history_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  if (kIsWeb) {
-    PWAInstall().setup(
-      installCallback: () {
-        debugPrint('APP INSTALLED!');
-      },
-    );
-  }
+  PWAInstall().setup(
+    installCallback: () {
+      debugPrint('APP INSTALLED!');
+    },
+  );
   await AppwriteService.init();
   runApp(const MyApp());
 }

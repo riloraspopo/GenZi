@@ -689,7 +689,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                             Row(
                                               children: [
                                                 const Text(
-                                                  'Mari belajar bersama hari ini!',
+                                                  'Mari belajar bersama hari ini..!',
                                                   style: TextStyle(
                                                     fontSize: 14,
                                                     color: Colors.white70,
