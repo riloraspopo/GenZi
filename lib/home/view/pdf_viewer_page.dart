@@ -48,17 +48,14 @@ class _PdfViewerPageState extends State<PdfViewerPage> {
     try {
       // Register the iframe view factory for web
       // ignore: undefined_prefixed_name
-      ui_web.platformViewRegistry.registerViewFactory(
-        _iframeId,
-        (int viewId) {
-          final iframe = html.IFrameElement()
-            ..src = widget.pdfUrl
-            ..style.border = 'none'
-            ..style.height = '100%'
-            ..style.width = '100%';
-          return iframe;
-        },
-      );
+      ui_web.platformViewRegistry.registerViewFactory(_iframeId, (int viewId) {
+        final iframe = html.IFrameElement()
+          ..src = widget.pdfUrl
+          ..style.border = 'none'
+          ..style.height = '100%'
+          ..style.width = '100%';
+        return iframe;
+      });
 
       setState(() {
         isLoading = false;
@@ -82,7 +79,8 @@ class _PdfViewerPageState extends State<PdfViewerPage> {
       // Get the temporary directory
       final dir = await getTemporaryDirectory();
       // Create unique filename using URL hash to prevent cache conflicts
-      final fileName = '${widget.pdfUrl.hashCode}_${path.basename(widget.pdfUrl)}';
+      final fileName =
+          '${widget.pdfUrl.hashCode}_${path.basename(widget.pdfUrl)}';
       final filePath = path.join(dir.path, fileName);
       final file = File(filePath);
 
@@ -99,9 +97,7 @@ class _PdfViewerPageState extends State<PdfViewerPage> {
       await _dio.download(
         widget.pdfUrl,
         filePath,
-        options: Options(
-          headers: {'X-Requested-With': 'XMLHttpRequest'},
-        ),
+        options: Options(headers: {'X-Requested-With': 'XMLHttpRequest'}),
       );
 
       if (await file.exists()) {
@@ -231,7 +227,7 @@ class _PdfViewerPageState extends State<PdfViewerPage> {
 
   Future<void> _cleanupCache() async {
     if (kIsWeb) return;
-    
+
     try {
       if (localPath != null) {
         final file = File(localPath!);
