@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'package:myapp/home/view/chat_page.dart';
+import 'package:package_info_plus/package_info_plus.dart';
+import 'package:pwa_install/pwa_install.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:myapp/home/data/data_provider.dart';
 import 'package:myapp/home/models/educational_content.dart';
@@ -39,10 +41,20 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   late Animation<double> _greetingFadeAnimation;
   late Animation<Offset> _greetingSlideAnimation;
   late Animation<double> _cardScaleAnimation;
+  String appVersion = "-";
+
+  Future<void> loadVersion() async {
+    final info = await PackageInfo.fromPlatform();
+
+    setState(() {
+      appVersion = info.version; // e.g. "1.2.3"
+    });
+  }
 
   @override
   void initState() {
     super.initState();
+    loadVersion();
 
     // Initialize animations
     _greetingAnimationController = AnimationController(
@@ -534,6 +546,17 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                 pinned: true,
                 backgroundColor: Colors.deepPurple,
                 actions: [
+                  if (PWAInstall().installPromptEnabled)
+                    IconButton(
+                      onPressed: () {
+                        PWAInstall().promptInstall_();
+                      },
+                      icon: const Icon(
+                        Icons.download_rounded,
+                        color: Colors.white,
+                      ),
+                      tooltip: 'Install Aplikasi',
+                    ),
                   IconButton(
                     icon: const Icon(Icons.school_rounded, color: Colors.white),
                     onPressed: () {
@@ -663,12 +686,24 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                               ),
                                             ),
                                             const SizedBox(height: 2),
-                                            const Text(
-                                              'Mari belajar bersama hari ini!',
-                                              style: TextStyle(
-                                                fontSize: 14,
-                                                color: Colors.white70,
-                                              ),
+                                            Row(
+                                              children: [
+                                                const Text(
+                                                  'Mari belajar bersama hari ini!',
+                                                  style: TextStyle(
+                                                    fontSize: 14,
+                                                    color: Colors.white70,
+                                                  ),
+                                                ),
+                                                Spacer(),
+                                                Text(
+                                                  appVersion,
+                                                  style: TextStyle(
+                                                    fontSize: 14,
+                                                    color: Colors.white70,
+                                                  ),
+                                                ),
+                                              ],
                                             ),
                                           ],
                                         ),

@@ -1,7 +1,9 @@
 import 'package:appwrite/appwrite.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:myapp/constant.dart';
 import 'package:myapp/services/appwrite_service.dart';
+import 'package:pwa_install/pwa_install.dart';
 import 'home/view/home_page.dart';
 import 'package:myapp/home/view/teacher_login_page.dart';
 import 'package:myapp/home/view/survey_page.dart';
@@ -12,6 +14,13 @@ import 'package:myapp/home/view/complaint_history_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  if (kIsWeb) {
+    PWAInstall().setup(
+      installCallback: () {
+        debugPrint('APP INSTALLED!');
+      },
+    );
+  }
   await AppwriteService.init();
   runApp(const MyApp());
 }
