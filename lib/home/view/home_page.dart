@@ -28,6 +28,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   Future<List<EducationalPoster>>? _postersFuture;
   Future<List<PdfResource>>? _pdfResourcesFuture;
   Future<int>? _videoCountFuture;
+  List<EducationalPoster> _randomPosters = [];
   final ScrollController _postersScrollController = ScrollController();
   final ScrollController _mainScrollController = ScrollController();
   double _scrollPercent = 0.0;
@@ -165,7 +166,18 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         _videoCountFuture = videoCount;
       });
 
-      await Future.wait([posters, pdfs, videoCount]);
+      // Wait for data and shuffle posters
+      final postersList = await posters;
+      final shuffledPosters = List<EducationalPoster>.from(postersList)
+        ..shuffle();
+
+      if (!mounted) return;
+
+      setState(() {
+        _randomPosters = shuffledPosters.take(5).toList();
+      });
+
+      await Future.wait([pdfs, videoCount]);
     } catch (e) {
       if (kDebugMode) {
         print('Error refreshing data: $e');
@@ -921,17 +933,16 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                               color: Colors.black87,
                             ),
                           ),
-                          // TextButton(
-                          //   onPressed: () {
-                          //   },
-                          //   child: Text(
-                          //     'Lihat Semua',
-                          //     style: TextStyle(
-                          //       color: Colors.deepPurple.shade600,
-                          //       fontWeight: FontWeight.w600,
-                          //     ),
-                          //   ),
-                          // ),
+                          TextButton(
+                            onPressed: () {},
+                            child: Text(
+                              'Lihat Semua',
+                              style: TextStyle(
+                                color: Colors.deepPurple.shade600,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
                         ],
                       ),
                       const SizedBox(height: 16),
@@ -1020,6 +1031,11 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                             );
                           }
 
+                          // Use cached random posters
+                          final postersToShow = _randomPosters.isEmpty
+                              ? posters.take(5).toList()
+                              : _randomPosters;
+
                           return Column(
                             children: [
                               // Progress indicator
@@ -1059,13 +1075,13 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                     padding: const EdgeInsets.symmetric(
                                       vertical: 8,
                                     ),
-                                    itemCount: posters.length,
+                                    itemCount: postersToShow.length,
                                     itemBuilder: (context, index) {
-                                      final poster = posters[index];
-                                      if (index < posters.length - 1) {
+                                      final poster = postersToShow[index];
+                                      if (index < postersToShow.length - 1) {
                                         precacheImage(
                                           NetworkImage(
-                                            posters[index + 1].imageUrl,
+                                            postersToShow[index + 1].imageUrl,
                                             headers: const {
                                               'X-Requested-With':
                                                   'XMLHttpRequest',
@@ -1078,7 +1094,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                         context: context,
                                         poster: poster,
                                         isFirst: index == 0,
-                                        isLast: index == posters.length - 1,
+                                        isLast:
+                                            index == postersToShow.length - 1,
                                       );
                                     },
                                   ),

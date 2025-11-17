@@ -3,12 +3,14 @@ class EducationalPoster {
   final String title;
   final String imageUrl;
   final String description;
+  final List<String> tags;
 
   EducationalPoster({
     required this.id,
     required this.title,
     required this.imageUrl,
     required this.description,
+    this.tags = const [],
   });
 }
 
