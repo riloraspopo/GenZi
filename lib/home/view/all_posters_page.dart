@@ -109,6 +109,8 @@ class _AllPostersPageState extends State<AllPostersPage> {
                         children: [
                           // All filter chip
                           FilterChip(
+                            materialTapTargetSize:
+                                MaterialTapTargetSize.shrinkWrap,
                             label: const Text('Semua'),
                             selected: _selectedTag == null,
                             onSelected: (selected) {
@@ -121,7 +123,7 @@ class _AllPostersPageState extends State<AllPostersPage> {
                                 ? Colors.white
                                 : Colors.deepPurple.shade700,
                             labelStyle: TextStyle(
-                              fontSize: 12,
+                              fontSize: 10,
                               color: _selectedTag == null
                                   ? Colors.deepPurple
                                   : Colors.white,
@@ -133,6 +135,8 @@ class _AllPostersPageState extends State<AllPostersPage> {
                           ...tags.map((tag) {
                             final isSelected = _selectedTag == tag;
                             return FilterChip(
+                              materialTapTargetSize:
+                                  MaterialTapTargetSize.shrinkWrap,
                               label: Text(tag),
                               selected: isSelected,
                               onSelected: (selected) {
@@ -145,7 +149,7 @@ class _AllPostersPageState extends State<AllPostersPage> {
                                   ? Colors.white
                                   : Colors.deepPurple.shade700,
                               labelStyle: TextStyle(
-                                fontSize: 12,
+                                fontSize: 10,
                                 color: isSelected
                                     ? Colors.deepPurple
                                     : Colors.white,
