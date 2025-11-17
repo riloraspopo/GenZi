@@ -11,24 +11,30 @@ class DataProvider {
       final files = await AppwriteService.listFiles(mediaBucketId);
 
       final posters = files
-          .where((file) =>
-              !file.mimeType.startsWith('application/pdf') && // Filter out PDFs
-              !file.mimeType
-                  .toLowerCase()
-                  .startsWith('video/') && // Filter out videos by MIME type
-              !file.name
-                  .toLowerCase()
-                  .endsWith('.mp4') && // Filter out video files by extension
-              !file.name.toLowerCase().endsWith('.mov') &&
-              !file.name.toLowerCase().endsWith('.avi') &&
-              !file.name.toLowerCase().endsWith('.mkv') &&
-              !file.name.toLowerCase().endsWith('.webm'))
-          .map((file) => EducationalPoster(
-                id: file.$id,
-                title: file.name.substring(0, file.name.lastIndexOf('.')),
-                imageUrl: AppwriteService.getFileView(mediaBucketId, file.$id),
-                description: file.name,
-              ))
+          .where(
+            (file) =>
+                !file.mimeType.startsWith(
+                  'application/pdf',
+                ) && // Filter out PDFs
+                !file.mimeType.toLowerCase().startsWith(
+                  'video/',
+                ) && // Filter out videos by MIME type
+                !file.name.toLowerCase().endsWith(
+                  '.mp4',
+                ) && // Filter out video files by extension
+                !file.name.toLowerCase().endsWith('.mov') &&
+                !file.name.toLowerCase().endsWith('.avi') &&
+                !file.name.toLowerCase().endsWith('.mkv') &&
+                !file.name.toLowerCase().endsWith('.webm'),
+          )
+          .map(
+            (file) => EducationalPoster(
+              id: file.$id,
+              title: file.name.substring(0, file.name.lastIndexOf('.')),
+              imageUrl: AppwriteService.getFileView(mediaBucketId, file.$id),
+              description: file.name,
+            ),
+          )
           .toList();
 
       if (kDebugMode) {
@@ -49,13 +55,15 @@ class DataProvider {
 
       return files
           .where((file) => file.mimeType.startsWith('application/pdf'))
-          .map((file) => PdfResource(
-                id: file.$id,
-                title: file.name.substring(0, file.name.lastIndexOf('.')),
-                pdfUrl: AppwriteService.getFileView(mediaBucketId, file.$id),
-                thumbnailUrl: 'https://via.placeholder.com/150',
-                description: file.name,
-              ))
+          .map(
+            (file) => PdfResource(
+              id: file.$id,
+              title: file.name.substring(0, file.name.lastIndexOf('.')),
+              pdfUrl: AppwriteService.getFileView(mediaBucketId, file.$id),
+              thumbnailUrl: 'https://via.placeholder.com/150',
+              description: file.name,
+            ),
+          )
           .toList();
     } catch (e) {
       // ignore: avoid_print
@@ -69,17 +77,19 @@ class DataProvider {
       final files = await AppwriteService.listFiles(mediaBucketId);
 
       final videoFiles = files
-          .where((file) =>
-              file.mimeType
-                  .toLowerCase()
-                  .startsWith('video/') || // Filter videos by MIME type
-              file.name
-                  .toLowerCase()
-                  .endsWith('.mp4') || // Filter video files by extension
-              file.name.toLowerCase().endsWith('.mov') ||
-              file.name.toLowerCase().endsWith('.avi') ||
-              file.name.toLowerCase().endsWith('.mkv') ||
-              file.name.toLowerCase().endsWith('.webm'))
+          .where(
+            (file) =>
+                file.mimeType.toLowerCase().startsWith(
+                  'video/',
+                ) || // Filter videos by MIME type
+                file.name.toLowerCase().endsWith(
+                  '.mp4',
+                ) || // Filter video files by extension
+                file.name.toLowerCase().endsWith('.mov') ||
+                file.name.toLowerCase().endsWith('.avi') ||
+                file.name.toLowerCase().endsWith('.mkv') ||
+                file.name.toLowerCase().endsWith('.webm'),
+          )
           .toList();
 
       if (kDebugMode) {
