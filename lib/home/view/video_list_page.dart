@@ -20,7 +20,8 @@ class VideoListPage extends StatefulWidget {
 
 class _VideoListPageState extends State<VideoListPage> {
   late Future<List<models.File>> _videosFuture;
-  final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey = GlobalKey<RefreshIndicatorState>();
+  final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
+      GlobalKey<RefreshIndicatorState>();
 
   @override
   void initState() {
@@ -39,23 +40,32 @@ class _VideoListPageState extends State<VideoListPage> {
     await _videosFuture;
   }
 
-
+  String _formatFileName(String name) {
+    // remove file extension for display
+    final dotIndex = name.lastIndexOf('.');
+    if (dotIndex != -1) {
+      return name.substring(0, dotIndex);
+    }
+    return name;
+  }
 
   String _formatFileSize(int bytes) {
     if (bytes < 1024) return '$bytes B';
     if (bytes < 1024 * 1024) return '${(bytes / 1024).toStringAsFixed(1)} KB';
-    if (bytes < 1024 * 1024 * 1024) return '${(bytes / (1024 * 1024)).toStringAsFixed(1)} MB';
+    if (bytes < 1024 * 1024 * 1024) {
+      return '${(bytes / (1024 * 1024)).toStringAsFixed(1)} MB';
+    }
     return '${(bytes / (1024 * 1024 * 1024)).toStringAsFixed(1)} GB';
   }
 
   String _formatDuration(String? updatedAtString) {
     if (updatedAtString == null || updatedAtString.isEmpty) return '';
-    
+
     try {
       final updatedAt = DateTime.parse(updatedAtString);
       final now = DateTime.now();
       final difference = now.difference(updatedAt);
-      
+
       if (difference.inDays > 0) {
         return '${difference.inDays} hari yang lalu';
       } else if (difference.inHours > 0) {
@@ -72,14 +82,12 @@ class _VideoListPageState extends State<VideoListPage> {
 
   void _openVideoPlayer(models.File video) {
     final videoUrl = AppwriteService.getVideoUrl(widget.bucketId, video.$id);
-    
+
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => VideoPlayerPage(
-          videoUrl: videoUrl,
-          title: video.name,
-        ),
+        builder: (context) =>
+            VideoPlayerPage(videoUrl: videoUrl, title: video.name),
       ),
     );
   }
@@ -88,9 +96,7 @@ class _VideoListPageState extends State<VideoListPage> {
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       elevation: 2,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: InkWell(
         onTap: () => _openVideoPlayer(video),
         borderRadius: BorderRadius.circular(12),
@@ -118,7 +124,10 @@ class _VideoListPageState extends State<VideoListPage> {
                       bottom: 4,
                       right: 4,
                       child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 4,
+                          vertical: 2,
+                        ),
                         decoration: BoxDecoration(
                           color: Colors.black.withValues(alpha: 0.7),
                           borderRadius: BorderRadius.circular(4),
@@ -150,16 +159,16 @@ class _VideoListPageState extends State<VideoListPage> {
                   ],
                 ),
               ),
-              
+
               const SizedBox(width: 12),
-              
+
               // Video details
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      video.name,
+                      _formatFileName(video.name),
                       style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
@@ -196,14 +205,11 @@ class _VideoListPageState extends State<VideoListPage> {
                   ],
                 ),
               ),
-              
+
               // More options button
               IconButton(
                 onPressed: () => _showVideoOptions(video),
-                icon: Icon(
-                  Icons.more_vert,
-                  color: Colors.grey.shade600,
-                ),
+                icon: Icon(Icons.more_vert, color: Colors.grey.shade600),
               ),
             ],
           ),
@@ -234,10 +240,7 @@ class _VideoListPageState extends State<VideoListPage> {
             const SizedBox(height: 16),
             Text(
               video.name,
-              style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 20),
@@ -298,7 +301,10 @@ class _VideoListPageState extends State<VideoListPage> {
       appBar: AppBar(
         title: Text(
           widget.title,
-          style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+          style: const TextStyle(
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
         ),
         backgroundColor: Colors.purple.shade700,
         elevation: 0,
@@ -325,9 +331,7 @@ class _VideoListPageState extends State<VideoListPage> {
             future: _videosFuture,
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Center(
-                  child: CircularProgressIndicator(),
-                );
+                return const Center(child: CircularProgressIndicator());
               }
 
               if (snapshot.hasError) {
@@ -352,14 +356,13 @@ class _VideoListPageState extends State<VideoListPage> {
                       const SizedBox(height: 8),
                       Text(
                         snapshot.error.toString(),
-                        style: TextStyle(
-                          color: Colors.grey.shade600,
-                        ),
+                        style: TextStyle(color: Colors.grey.shade600),
                         textAlign: TextAlign.center,
                       ),
                       const SizedBox(height: 24),
                       ElevatedButton.icon(
-                        onPressed: () => _refreshIndicatorKey.currentState?.show(),
+                        onPressed: () =>
+                            _refreshIndicatorKey.currentState?.show(),
                         icon: const Icon(Icons.refresh),
                         label: const Text('Coba Lagi'),
                         style: ElevatedButton.styleFrom(
@@ -396,9 +399,7 @@ class _VideoListPageState extends State<VideoListPage> {
                       const SizedBox(height: 8),
                       Text(
                         'Video akan muncul di sini setelah diunggah',
-                        style: TextStyle(
-                          color: Colors.grey.shade600,
-                        ),
+                        style: TextStyle(color: Colors.grey.shade600),
                         textAlign: TextAlign.center,
                       ),
                     ],
@@ -478,9 +479,7 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
         placeholder: Container(
           color: Colors.black,
           child: const Center(
-            child: CircularProgressIndicator(
-              color: Colors.purple,
-            ),
+            child: CircularProgressIndicator(color: Colors.purple),
           ),
         ),
         errorBuilder: (context, errorMessage) {
@@ -507,10 +506,7 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
                   const SizedBox(height: 8),
                   Text(
                     errorMessage,
-                    style: const TextStyle(
-                      color: Colors.white70,
-                      fontSize: 14,
-                    ),
+                    style: const TextStyle(color: Colors.white70, fontSize: 14),
                     textAlign: TextAlign.center,
                   ),
                 ],
@@ -545,7 +541,10 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
       appBar: AppBar(
         title: Text(
           widget.title,
-          style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+          style: const TextStyle(
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
         ),
         backgroundColor: Colors.purple.shade700,
         iconTheme: const IconThemeData(color: Colors.white),
@@ -562,16 +561,11 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            CircularProgressIndicator(
-              color: Colors.purple,
-            ),
+            CircularProgressIndicator(color: Colors.purple),
             SizedBox(height: 16),
             Text(
               'Loading video...',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 16,
-              ),
+              style: TextStyle(color: Colors.white, fontSize: 16),
             ),
           ],
         ),
@@ -585,11 +579,7 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(
-                Icons.error_outline,
-                color: Colors.red,
-                size: 64,
-              ),
+              const Icon(Icons.error_outline, color: Colors.red, size: 64),
               const SizedBox(height: 16),
               const Text(
                 'Failed to load video',
@@ -602,10 +592,7 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
               const SizedBox(height: 8),
               Text(
                 _errorMessage,
-                style: const TextStyle(
-                  color: Colors.white70,
-                  fontSize: 14,
-                ),
+                style: const TextStyle(color: Colors.white70, fontSize: 14),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 24),
@@ -636,10 +623,7 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
     return const Center(
       child: Text(
         'No video available',
-        style: TextStyle(
-          color: Colors.white,
-          fontSize: 16,
-        ),
+        style: TextStyle(color: Colors.white, fontSize: 16),
       ),
     );
   }
