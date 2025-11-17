@@ -326,6 +326,7 @@ class _AllPostersPageState extends State<AllPostersPage> {
                         width: double.infinity,
                         height: double.infinity,
                         fit: BoxFit.cover,
+                        alignment: Alignment.topCenter,
                         headers: const {'X-Requested-With': 'XMLHttpRequest'},
                         loadingBuilder:
                             (

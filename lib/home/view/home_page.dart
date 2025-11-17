@@ -421,6 +421,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                       width: double.infinity,
                       poster.imageUrl,
                       fit: BoxFit.cover,
+                      alignment: Alignment.topCenter,
                       headers: const {'X-Requested-With': 'XMLHttpRequest'},
                       loadingBuilder:
                           (
