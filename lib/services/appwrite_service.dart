@@ -5,7 +5,6 @@ import 'package:logging/logging.dart';
 import 'package:myapp/home/models/bmi_record.dart';
 import '../constant.dart';
 import '../home/models/study_tip.dart';
-import 'dart:typed_data';
 
 class AppwriteService {
   static final _log = Logger('AppwriteService');

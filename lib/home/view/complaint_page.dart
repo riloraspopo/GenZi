@@ -174,7 +174,6 @@ class ComplaintPageState extends State<ComplaintPage> {
       // Go back to dashboard
       Navigator.of(context).pop();
     } catch (e) {
-      print(e);
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
