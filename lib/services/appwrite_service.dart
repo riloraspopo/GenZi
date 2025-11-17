@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:logging/logging.dart';
 import 'package:myapp/home/models/bmi_record.dart';
 import '../constant.dart';
+import '../home/models/educational_content.dart';
 import '../home/models/study_tip.dart';
 
 class AppwriteService {
@@ -548,6 +549,96 @@ class AppwriteService {
       _log.info('Complaint created for user: $userId');
     } catch (e) {
       _log.severe('Error creating complaint: $e');
+      rethrow;
+    }
+  }
+
+  // Poster Methods
+  static Future<List<EducationalPoster>> getPostersFromDatabase({
+    String? tagFilter,
+  }) async {
+    try {
+      List<String> queries = [Query.limit(100)];
+
+      if (tagFilter != null && tagFilter.isNotEmpty) {
+        queries.add(Query.equal('tag', tagFilter));
+      }
+
+      final result = await databases.listDocuments(
+        databaseId: AppwriteConstants.DATABASE_ID,
+        collectionId: AppwriteConstants.POSTER_COLLECTION_ID,
+        queries: queries,
+      );
+
+      _log.info('Retrieved ${result.documents.length} posters from database');
+
+      // Get file details to extract filename
+      final List<EducationalPoster> posters = [];
+
+      for (var doc in result.documents) {
+        final data = doc.data;
+        final imageId = data['imageId'] ?? '';
+        final tag = data['tag'] ?? '';
+
+        // Get title from storage filename
+        String title = 'Poster ${doc.$id.substring(0, 8)}';
+        if (imageId.isNotEmpty) {
+          try {
+            final file = await _storage.getFile(
+              bucketId: AppwriteConstants.MEDIA_BUCKET_ID,
+              fileId: imageId,
+            );
+            // Extract filename without extension
+            final filename = file.name;
+            if (filename.contains('.')) {
+              title = filename.substring(0, filename.lastIndexOf('.'));
+            } else {
+              title = filename;
+            }
+          } catch (e) {
+            _log.warning('Could not get file details for $imageId: $e');
+          }
+        }
+
+        posters.add(
+          EducationalPoster(
+            id: doc.$id,
+            title: title,
+            imageUrl: getFileView(AppwriteConstants.MEDIA_BUCKET_ID, imageId),
+            description: data['description'] ?? '',
+            tags: tag.isNotEmpty ? [tag] : [],
+          ),
+        );
+      }
+
+      return posters;
+    } catch (e) {
+      _log.severe('Error getting posters from database: $e');
+      rethrow;
+    }
+  }
+
+  static Future<List<String>> getPosterTags() async {
+    try {
+      final result = await databases.listDocuments(
+        databaseId: AppwriteConstants.DATABASE_ID,
+        collectionId: AppwriteConstants.POSTER_COLLECTION_ID,
+        queries: [Query.limit(100)],
+      );
+
+      final tagsSet = <String>{};
+      for (var doc in result.documents) {
+        final tag = doc.data['tag'];
+        if (tag != null && tag.toString().isNotEmpty) {
+          tagsSet.add(tag.toString());
+        }
+      }
+
+      final tags = tagsSet.toList()..sort();
+      _log.info('Found ${tags.length} unique tags');
+      return tags;
+    } catch (e) {
+      _log.severe('Error getting poster tags: $e');
       rethrow;
     }
   }

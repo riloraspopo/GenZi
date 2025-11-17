@@ -143,4 +143,40 @@ class DataProvider {
       ),
     ];
   }
+
+  // Fetch posters from database with tag information
+  static Future<List<EducationalPoster>> getPostersFromDatabase({
+    String? tagFilter,
+  }) async {
+    try {
+      final posters = await AppwriteService.getPostersFromDatabase(
+        tagFilter: tagFilter,
+      );
+      if (kDebugMode) {
+        print('Found ${posters.length} posters from database');
+      }
+      return posters;
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error getting posters from database: $e');
+      }
+      rethrow;
+    }
+  }
+
+  // Get all unique tags from posters
+  static Future<List<String>> getPosterTags() async {
+    try {
+      final tags = await AppwriteService.getPosterTags();
+      if (kDebugMode) {
+        print('Found ${tags.length} unique tags');
+      }
+      return tags;
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error getting poster tags: $e');
+      }
+      rethrow;
+    }
+  }
 }

@@ -15,6 +15,7 @@ import 'package:myapp/home/view/mini_game_menu_page.dart';
 import 'package:myapp/home/view/video_list_page.dart';
 import 'package:myapp/home/view/bmi_calculator_page.dart';
 import 'package:myapp/home/view/teacher_login_page.dart';
+import 'package:myapp/home/view/all_posters_page.dart';
 import 'package:myapp/home/widgets/study_tips_widget.dart';
 
 class HomePage extends StatefulWidget {
@@ -934,7 +935,14 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                             ),
                           ),
                           TextButton(
-                            onPressed: () {},
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const AllPostersPage(),
+                                ),
+                              );
+                            },
                             child: Text(
                               'Lihat Semua',
                               style: TextStyle(
