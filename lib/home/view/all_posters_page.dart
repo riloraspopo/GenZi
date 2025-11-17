@@ -68,17 +68,6 @@ class _AllPostersPageState extends State<AllPostersPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Padding(
-                  padding: EdgeInsets.fromLTRB(16, 8, 16, 8),
-                  child: Text(
-                    'Filter berdasarkan Tag',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
                 FutureBuilder<List<String>>(
                   future: _tagsFuture,
                   builder: (context, snapshot) {
@@ -113,13 +102,10 @@ class _AllPostersPageState extends State<AllPostersPage> {
                     final tags = snapshot.data!;
 
                     return Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 8,
-                      ),
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
                       child: Wrap(
-                        spacing: 8,
-                        runSpacing: 8,
+                        spacing: 4,
+                        runSpacing: 4,
                         children: [
                           // All filter chip
                           FilterChip(
@@ -135,6 +121,7 @@ class _AllPostersPageState extends State<AllPostersPage> {
                                 ? Colors.white
                                 : Colors.deepPurple.shade700,
                             labelStyle: TextStyle(
+                              fontSize: 12,
                               color: _selectedTag == null
                                   ? Colors.deepPurple
                                   : Colors.white,
@@ -158,6 +145,7 @@ class _AllPostersPageState extends State<AllPostersPage> {
                                   ? Colors.white
                                   : Colors.deepPurple.shade700,
                               labelStyle: TextStyle(
+                                fontSize: 12,
                                 color: isSelected
                                     ? Colors.deepPurple
                                     : Colors.white,
