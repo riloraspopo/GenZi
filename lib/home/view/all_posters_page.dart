@@ -89,8 +89,12 @@ class _AllPostersPageState extends State<AllPostersPage> {
                           vertical: 8,
                         ),
                         child: Shimmer.fromColors(
-                          baseColor: Colors.white.withOpacity(0.3),
-                          highlightColor: Colors.white.withOpacity(0.5),
+                          baseColor: Colors.white.withAlpha(
+                            (255 * 0.3).toInt(),
+                          ),
+                          highlightColor: Colors.white.withAlpha(
+                            (255 * 0.5).toInt(),
+                          ),
                           child: Container(
                             height: 40,
                             decoration: BoxDecoration(
