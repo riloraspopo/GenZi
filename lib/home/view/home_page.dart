@@ -29,6 +29,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   Future<List<EducationalPoster>>? _postersFuture;
   Future<List<PdfResource>>? _pdfResourcesFuture;
   Future<int>? _videoCountFuture;
+  Future<List<EducationalPoster>>? _themesFuture;
   List<EducationalPoster> _randomPosters = [];
   final ScrollController _postersScrollController = ScrollController();
   final ScrollController _mainScrollController = ScrollController();
@@ -109,6 +110,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     _postersFuture = DataProvider.getPosters();
     _pdfResourcesFuture = DataProvider.getPdfResources();
     _videoCountFuture = DataProvider.getVideoCount();
+    _themesFuture = DataProvider.getEducationalThemes();
 
     _refreshData();
   }
@@ -146,6 +148,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         _postersFuture = null;
         _pdfResourcesFuture = null;
         _videoCountFuture = null;
+        _themesFuture = null;
         _postersListKey = UniqueKey();
       });
 
@@ -158,6 +161,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       final posters = DataProvider.getPosters();
       final pdfs = DataProvider.getPdfResources();
       final videoCount = DataProvider.getVideoCount();
+      final themes = DataProvider.getEducationalThemes();
 
       if (!mounted) return;
 
@@ -165,6 +169,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         _postersFuture = posters;
         _pdfResourcesFuture = pdfs;
         _videoCountFuture = videoCount;
+        _themesFuture = themes;
       });
 
       // Wait for data and shuffle posters
@@ -386,6 +391,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     required EducationalPoster poster,
     required bool isFirst,
     required bool isLast,
+    bool realTitle = true,
   }) {
     return Container(
       width: 240,
@@ -469,10 +475,11 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                   ),
                 ),
               ),
+
               Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Text(
-                  poster.title,
+                  realTitle ? poster.title : 'Edukasi ${poster.title}',
                   style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
@@ -833,6 +840,38 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                             );
                                           },
                                         ),
+                                      ),
+                                      const SizedBox(width: 12),
+                                      Expanded(
+                                        child:
+                                            FutureBuilder<
+                                              List<EducationalPoster>
+                                            >(
+                                              future: _themesFuture,
+                                              builder: (context, snapshot) {
+                                                return _buildStatsCard(
+                                                  title: 'Tema\nEdukasi',
+                                                  value:
+                                                      '${snapshot.data?.length ?? 0}',
+                                                  icon: Icons.topic_rounded,
+                                                  color: Colors.deepPurple,
+                                                  onTap: () {
+                                                    // Scroll to themes section
+                                                    _mainScrollController
+                                                        .animateTo(
+                                                          1450,
+                                                          duration:
+                                                              const Duration(
+                                                                milliseconds:
+                                                                    800,
+                                                              ),
+                                                          curve:
+                                                              Curves.easeInOut,
+                                                        );
+                                                  },
+                                                );
+                                              },
+                                            ),
                                       ),
                                     ],
                                   ),
@@ -1271,6 +1310,159 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                         ),
                                       ),
                                     ),
+                                  );
+                                },
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+
+              // Educational Themes Section
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Tema Edukasi',
+                        style: TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black87,
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      FutureBuilder<List<EducationalPoster>>(
+                        future: _themesFuture,
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return SizedBox(
+                              height: 320,
+                              child: ListView.builder(
+                                scrollDirection: Axis.horizontal,
+                                itemCount: 3,
+                                itemBuilder: (context, index) {
+                                  return Container(
+                                    width: 240,
+                                    margin: const EdgeInsets.only(right: 16),
+                                    child: Shimmer.fromColors(
+                                      baseColor: Colors.grey[300]!,
+                                      highlightColor: Colors.grey[100]!,
+                                      child: Card(
+                                        elevation: 4,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(
+                                            20,
+                                          ),
+                                        ),
+                                        child: Container(),
+                                      ),
+                                    ),
+                                  );
+                                },
+                              ),
+                            );
+                          }
+
+                          if (snapshot.hasError) {
+                            return Container(
+                              height: 200,
+                              alignment: Alignment.center,
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    Icons.error_outline,
+                                    size: 48,
+                                    color: Colors.grey[400],
+                                  ),
+                                  const SizedBox(height: 16),
+                                  Text(
+                                    'Kesalahan memuat tema edukasi',
+                                    style: TextStyle(
+                                      color: Colors.grey[600],
+                                      fontSize: 16,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          }
+
+                          final themes = snapshot.data ?? [];
+
+                          if (themes.isEmpty) {
+                            return Container(
+                              height: 200,
+                              alignment: Alignment.center,
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    Icons.topic_outlined,
+                                    size: 48,
+                                    color: Colors.grey[400],
+                                  ),
+                                  const SizedBox(height: 16),
+                                  Text(
+                                    'Belum ada tema edukasi tersedia',
+                                    style: TextStyle(
+                                      color: Colors.grey[600],
+                                      fontSize: 16,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          }
+
+                          // // Use cached random themes
+                          // final themesToShow = _randomThemes.isEmpty
+                          //     ? themes.take(5).toList()
+                          //     : _randomThemes;
+
+                          return SizedBox(
+                            height: 320,
+                            child: ScrollConfiguration(
+                              behavior: ScrollConfiguration.of(context)
+                                  .copyWith(
+                                    dragDevices: {
+                                      PointerDeviceKind.touch,
+                                      PointerDeviceKind.mouse,
+                                    },
+                                  ),
+                              child: ListView.builder(
+                                scrollDirection: Axis.horizontal,
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 8,
+                                ),
+                                itemCount: themes.length,
+                                itemBuilder: (context, index) {
+                                  final theme = themes[index];
+                                  if (index < themes.length - 1) {
+                                    precacheImage(
+                                      NetworkImage(
+                                        themes[index + 1].imageUrl,
+                                        headers: const {
+                                          'X-Requested-With': 'XMLHttpRequest',
+                                        },
+                                      ),
+                                      context,
+                                    );
+                                  }
+                                  return _buildPosterItem(
+                                    context: context,
+                                    poster: theme,
+                                    isFirst: index == 0,
+                                    isLast: index == themes.length - 1,
+                                    realTitle: false,
                                   );
                                 },
                               ),

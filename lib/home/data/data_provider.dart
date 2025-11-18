@@ -5,6 +5,50 @@ import 'package:myapp/services/appwrite_service.dart';
 
 class DataProvider {
   static const String mediaBucketId = AppwriteConstants.MEDIA_BUCKET_ID;
+  static const String themeBucketId = '691c7387003a4f069717';
+
+  static Future<List<EducationalPoster>> getEducationalThemes() async {
+    try {
+      final files = await AppwriteService.listFiles(themeBucketId);
+
+      final themes = files
+          .where(
+            (file) =>
+                !file.mimeType.startsWith(
+                  'application/pdf',
+                ) && // Filter out PDFs
+                !file.mimeType.toLowerCase().startsWith(
+                  'video/',
+                ) && // Filter out videos by MIME type
+                !file.name.toLowerCase().endsWith(
+                  '.mp4',
+                ) && // Filter out video files by extension
+                !file.name.toLowerCase().endsWith('.mov') &&
+                !file.name.toLowerCase().endsWith('.avi') &&
+                !file.name.toLowerCase().endsWith('.mkv') &&
+                !file.name.toLowerCase().endsWith('.webm'),
+          )
+          .map(
+            (file) => EducationalPoster(
+              id: file.$id,
+              title: file.name.substring(0, file.name.lastIndexOf('.')),
+              imageUrl: AppwriteService.getFileView(themeBucketId, file.$id),
+              description: file.name,
+            ),
+          )
+          .toList();
+
+      if (kDebugMode) {
+        print('Found ${themes.length} educational themes');
+      }
+      return themes;
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error getting educational themes: $e');
+      }
+      rethrow;
+    }
+  }
 
   static Future<List<EducationalPoster>> getPosters() async {
     try {
