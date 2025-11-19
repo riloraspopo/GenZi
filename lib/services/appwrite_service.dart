@@ -362,7 +362,11 @@ class AppwriteService {
       final result = await databases.listDocuments(
         databaseId: AppwriteConstants.DATABASE_ID,
         collectionId: AppwriteConstants.SURVEY_RESPONSES_COLLECTION_ID,
-        queries: [Query.equal('userId', userId), Query.orderDesc('timestamp')],
+        queries: [
+          Query.equal('userId', userId),
+          Query.orderDesc('timestamp'),
+          Query.limit(100), // Ensure we get enough records
+        ],
       );
 
       _log.info(
@@ -375,6 +379,15 @@ class AppwriteService {
       for (var doc in result.documents) {
         final data = doc.data;
         final submissionId = data['submissionId'] ?? '';
+
+        // Debug logging
+        if (kDebugMode) {
+          print('📝 Document ID: ${doc.$id}');
+          print('   SubmissionId: $submissionId');
+          print('   Question: ${data['question']}');
+          print('   Timestamp: ${data['timestamp']}');
+        }
+
         final response = {
           '\$id': doc.$id,
           'userId': data['userId'] ?? '',
@@ -390,6 +403,15 @@ class AppwriteService {
           submissionGroups[submissionId] = [];
         }
         submissionGroups[submissionId]!.add(response);
+      }
+
+      if (kDebugMode) {
+        print('\n📊 Total unique submissions: ${submissionGroups.length}');
+        submissionGroups.forEach((id, responses) {
+          if (kDebugMode) {
+            print('   Submission $id: ${responses.length} responses');
+          }
+        });
       }
 
       // Convert the map to a list of submissions, sorting by timestamp
@@ -408,6 +430,10 @@ class AppwriteService {
 
       // Sort submissions by timestamp, newest first
       submissions.sort((a, b) => b['timestamp'].compareTo(a['timestamp']));
+
+      if (kDebugMode) {
+        print('✅ Returning ${submissions.length} submissions\n');
+      }
 
       return submissions;
     } catch (e) {

@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:myapp/services/appwrite_service.dart';
 import 'package:appwrite/models.dart' as models;
@@ -115,7 +116,18 @@ class SurveyHistoryPageState extends State<SurveyHistoryPage> {
                   final timestamp = DateTime.parse(submission['timestamp']);
                   final totalScore = _getTotalScore(responses);
                   final statusInfo = _getStatusInfo(totalScore);
+                  // Check if ANY response has a score field (even if it's 0)
                   final hasScore = responses.any((r) => r['score'] != null);
+
+                  // Debug: print score data
+                  if (kDebugMode) {
+                    print(
+                      'Survey ${index + 1}: hasScore=$hasScore, totalScore=$totalScore',
+                    );
+                    for (var r in responses) {
+                      print('  - ${r['question']}: score=${r['score']}');
+                    }
+                  }
 
                   return Card(
                     margin: const EdgeInsets.only(bottom: 12.0),
