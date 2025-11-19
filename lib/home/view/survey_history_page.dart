@@ -22,6 +22,41 @@ class SurveyHistoryPageState extends State<SurveyHistoryPage> {
     _loadSurveyHistory();
   }
 
+  int _getTotalScore(List<Map<String, dynamic>> responses) {
+    int total = 0;
+    for (var response in responses) {
+      if (response['score'] != null) {
+        total += response['score'] as int;
+      }
+    }
+    return total;
+  }
+
+  Map<String, dynamic> _getStatusInfo(int score) {
+    if (score == 0) {
+      return {
+        'label': 'Aman',
+        'icon': Icons.check_circle,
+        'color': Colors.green,
+        'bgColor': Colors.green.shade50,
+      };
+    } else if (score <= 3) {
+      return {
+        'label': 'Waspada',
+        'icon': Icons.warning,
+        'color': Colors.orange,
+        'bgColor': Colors.orange.shade50,
+      };
+    } else {
+      return {
+        'label': 'Bahaya',
+        'icon': Icons.dangerous,
+        'color': Colors.red,
+        'bgColor': Colors.red.shade50,
+      };
+    }
+  }
+
   Future<void> _loadSurveyHistory() async {
     setState(() => _isLoading = true);
     try {
@@ -78,14 +113,61 @@ class SurveyHistoryPageState extends State<SurveyHistoryPage> {
                     submission['responses'],
                   );
                   final timestamp = DateTime.parse(submission['timestamp']);
+                  final totalScore = _getTotalScore(responses);
+                  final statusInfo = _getStatusInfo(totalScore);
+                  final hasScore = responses.any((r) => r['score'] != null);
+                  
                   return Card(
                     margin: const EdgeInsets.only(bottom: 12.0),
+                    elevation: 2,
                     child: InkWell(
                       onTap: () {
                         showDialog(
                           context: context,
                           builder: (context) => AlertDialog(
-                            title: Text(_dateFormatter.format(timestamp)),
+                            title: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(_dateFormatter.format(timestamp)),
+                                if (hasScore) ...[
+                                  const SizedBox(height: 8),
+                                  Row(
+                                    children: [
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 10,
+                                          vertical: 6,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          color: statusInfo['color'],
+                                          borderRadius: BorderRadius.circular(12),
+                                        ),
+                                        child: Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            Icon(
+                                              statusInfo['icon'],
+                                              size: 16,
+                                              color: Colors.white,
+                                            ),
+                                            const SizedBox(width: 6),
+                                            Text(
+                                              '${statusInfo['label']} (Skor: $totalScore)',
+                                              style: const TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 13,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ],
+                            ),
                             content: SingleChildScrollView(
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -122,6 +204,42 @@ class SurveyHistoryPageState extends State<SurveyHistoryPage> {
                                                     ),
                                                   ),
                                                 ),
+                                                if (response['score'] != null) ...[
+                                                  const SizedBox(width: 8),
+                                                  Container(
+                                                    padding: const EdgeInsets.symmetric(
+                                                      horizontal: 8,
+                                                      vertical: 4,
+                                                    ),
+                                                    decoration: BoxDecoration(
+                                                      color: response['score'] == 0
+                                                          ? Colors.green.shade100
+                                                          : response['score'] <= 3
+                                                          ? Colors.orange.shade100
+                                                          : Colors.red.shade100,
+                                                      borderRadius: BorderRadius.circular(10),
+                                                      border: Border.all(
+                                                        color: response['score'] == 0
+                                                            ? Colors.green
+                                                            : response['score'] <= 3
+                                                            ? Colors.orange
+                                                            : Colors.red,
+                                                      ),
+                                                    ),
+                                                    child: Text(
+                                                      '${response['score']} poin',
+                                                      style: TextStyle(
+                                                        fontSize: 11,
+                                                        fontWeight: FontWeight.bold,
+                                                        color: response['score'] == 0
+                                                            ? Colors.green.shade700
+                                                            : response['score'] <= 3
+                                                            ? Colors.orange.shade700
+                                                            : Colors.red.shade700,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
                                               ],
                                             ),
                                             const SizedBox(height: 8),
@@ -184,17 +302,18 @@ class SurveyHistoryPageState extends State<SurveyHistoryPage> {
                         child: Row(
                           children: [
                             Container(
-                              width: 40,
-                              height: 40,
+                              width: 48,
+                              height: 48,
                               decoration: BoxDecoration(
-                                color: Theme.of(
-                                  context,
-                                ).primaryColor.withAlpha((0.1 * 255).round()),
-                                borderRadius: BorderRadius.circular(8),
+                                color: hasScore 
+                                  ? statusInfo['bgColor']
+                                  : Theme.of(context).primaryColor.withAlpha((0.1 * 255).round()),
+                                borderRadius: BorderRadius.circular(10),
                               ),
                               child: Icon(
-                                Icons.assignment_outlined,
-                                color: Theme.of(context).primaryColor,
+                                hasScore ? statusInfo['icon'] : Icons.assignment_outlined,
+                                color: hasScore ? statusInfo['color'] : Theme.of(context).primaryColor,
+                                size: 28,
                               ),
                             ),
                             const SizedBox(width: 16),
@@ -209,13 +328,68 @@ class SurveyHistoryPageState extends State<SurveyHistoryPage> {
                                       fontSize: 15,
                                     ),
                                   ),
-                                  const SizedBox(height: 4),
-                                  Text(
-                                    '${responses.length} jawaban',
-                                    style: TextStyle(
-                                      color: Colors.grey[600],
-                                      fontSize: 13,
-                                    ),
+                                  const SizedBox(height: 6),
+                                  Row(
+                                    children: [
+                                      if (hasScore) ...[
+                                        Container(
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 8,
+                                            vertical: 4,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            color: statusInfo['color'],
+                                            borderRadius: BorderRadius.circular(12),
+                                          ),
+                                          child: Row(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              Icon(
+                                                statusInfo['icon'],
+                                                size: 14,
+                                                color: Colors.white,
+                                              ),
+                                              const SizedBox(width: 4),
+                                              Text(
+                                                statusInfo['label'],
+                                                style: const TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: 12,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                        const SizedBox(width: 8),
+                                        Container(
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 8,
+                                            vertical: 4,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            color: Colors.grey.shade200,
+                                            borderRadius: BorderRadius.circular(12),
+                                          ),
+                                          child: Text(
+                                            'Skor: $totalScore',
+                                            style: TextStyle(
+                                              color: Colors.grey.shade700,
+                                              fontSize: 12,
+                                              fontWeight: FontWeight.w600,
+                                            ),
+                                          ),
+                                        ),
+                                      ] else ...[
+                                        Text(
+                                          '${responses.length} jawaban',
+                                          style: TextStyle(
+                                            color: Colors.grey[600],
+                                            fontSize: 13,
+                                          ),
+                                        ),
+                                      ],
+                                    ],
                                   ),
                                 ],
                               ),

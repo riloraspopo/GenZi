@@ -2,6 +2,7 @@ import 'package:appwrite/appwrite.dart';
 import 'package:appwrite/models.dart' as models;
 import 'package:flutter/foundation.dart';
 import 'package:logging/logging.dart';
+import 'dart:convert';
 import 'package:myapp/home/models/bmi_record.dart';
 import '../constant.dart';
 import '../home/models/educational_content.dart';
@@ -117,38 +118,103 @@ class AppwriteService {
   static Future<void> createTestSurveyQuestions() async {
     try {
       final testQuestions = [
+        // Single Choice with Score
         {
-          'question': 'Bagaimana pemahaman siswa tentang materi gizi seimbang?',
-          'options': ['Sangat Baik', 'Baik', 'Cukup', 'Perlu Peningkatan'],
-        },
-        {
-          'question':
-              'Seberapa aktif partisipasi siswa dalam kegiatan pembelajaran gizi?',
-          'options': ['Sangat Aktif', 'Aktif', 'Cukup Aktif', 'Kurang Aktif'],
-        },
-        {
-          'question':
-              'Apakah siswa menerapkan pengetahuan gizi dalam kehidupan sehari-hari?',
-          'options': ['Selalu', 'Sering', 'Kadang-kadang', 'Jarang'],
-        },
-        {
-          'question':
-              'Bagaimana tingkat kesadaran siswa tentang pentingnya makanan bergizi?',
-          'options': ['Sangat Tinggi', 'Tinggi', 'Sedang', 'Rendah'],
-        },
-        {
-          'question':
-              'Seberapa efektif metode pembelajaran gizi yang diterapkan?',
+          'question': 'Seberapa sering Anda mengajarkan materi gizi seimbang?',
+          'type': 'singleChoice',
           'options': [
-            'Sangat Efektif',
-            'Efektif',
-            'Cukup Efektif',
-            'Perlu Perbaikan',
+            'Setiap hari',
+            'Seminggu sekali',
+            'Sebulan sekali',
+            'Jarang',
           ],
+          'hasScore': true,
+          'optionScores': jsonEncode({
+            'Setiap hari': 10,
+            'Seminggu sekali': 7,
+            'Sebulan sekali': 4,
+            'Jarang': 1,
+          }),
+        },
+        // Multiple Choice with Score
+        {
+          'question':
+              'Metode pembelajaran apa yang Anda gunakan? (Pilih semua yang sesuai)',
+          'type': 'multipleChoice',
+          'options': [
+            'Ceramah interaktif',
+            'Diskusi kelompok',
+            'Game edukatif',
+            'Video pembelajaran',
+            'Praktik langsung',
+          ],
+          'hasScore': true,
+          'optionScores': jsonEncode({
+            'Ceramah interaktif': 2,
+            'Diskusi kelompok': 3,
+            'Game edukatif': 4,
+            'Video pembelajaran': 3,
+            'Praktik langsung': 5,
+          }),
+        },
+        // Single Choice with Score
+        {
+          'question': 'Bagaimana tingkat pemahaman siswa tentang gizi?',
+          'type': 'singleChoice',
+          'options': ['Sangat Baik', 'Baik', 'Cukup', 'Kurang'],
+          'hasScore': true,
+          'optionScores': jsonEncode({
+            'Sangat Baik': 10,
+            'Baik': 7,
+            'Cukup': 4,
+            'Kurang': 0,
+          }),
+        },
+        // Text Input without Score
+        {
+          'question': 'Apa tantangan terbesar dalam mengajar gizi?',
+          'type': 'text',
+          'options': [],
+          'hasScore': false,
+        },
+        // Multiple Choice without Score
+        {
+          'question':
+              'Topik gizi apa yang paling diminati siswa? (Pilih semua yang sesuai)',
+          'type': 'multipleChoice',
+          'options': [
+            'Makanan Sehat',
+            'Menu Seimbang',
+            'Dampak Junk Food',
+            'Vitamin dan Mineral',
+            'Obesitas dan Diet',
+          ],
+          'hasScore': false,
+        },
+        // Single Choice with Score
+        {
+          'question': 'Seberapa aktif partisipasi siswa dalam pembelajaran?',
+          'type': 'singleChoice',
+          'options': ['Sangat Aktif', 'Aktif', 'Cukup Aktif', 'Kurang Aktif'],
+          'hasScore': true,
+          'optionScores': jsonEncode({
+            'Sangat Aktif': 10,
+            'Aktif': 7,
+            'Cukup Aktif': 4,
+            'Kurang Aktif': 1,
+          }),
+        },
+        // Text Input without Score
+        {
+          'question': 'Saran untuk meningkatkan pembelajaran gizi di sekolah:',
+          'type': 'text',
+          'options': [],
+          'hasScore': false,
         },
       ];
 
       for (var question in testQuestions) {
+        print(question);
         await databases.createDocument(
           databaseId: AppwriteConstants.DATABASE_ID,
           collectionId: AppwriteConstants.SURVEY_COLLECTION_ID,
@@ -165,7 +231,9 @@ class AppwriteService {
     }
   }
 
-  // Survey Methods
+  // ===== GET SURVEY QUESTIONS FROM APPWRITE SERVER =====
+  // Retrieves all survey questions from Appwrite database
+  // Returns list of questions with type, options, and scoring information
   static Future<List<Map<String, dynamic>>> getSurveyQuestions() async {
     try {
       // await databases.createDocument(
@@ -215,10 +283,15 @@ class AppwriteService {
           }
         }
 
+        // Pass ALL fields from Appwrite to the model
         final processedData = {
           '\$id': doc.$id,
           'question': data['question']?.toString() ?? '',
+          'type': data['type'], // ← ADD THIS
           'options': options,
+          'hasScore': data['hasScore'], // ← ADD THIS
+          'optionScores':
+              data['optionScores'], // ← ADD THIS (will be parsed as JSON string)
           'selectedOption': null,
         };
 
@@ -236,28 +309,46 @@ class AppwriteService {
     }
   }
 
+  // ===== SAVE SURVEY RESPONSE TO APPWRITE SERVER =====
+  // Submits user's survey response to Appwrite database
+  // Supports single choice, multiple choice, and text responses
+  // Also saves calculated scores for questions that have scoring
   static Future<void> submitSurveyResponse(
     String questionId,
     String response,
     String userId,
     String question,
-    String submissionId,
-  ) async {
+    String submissionId, {
+    List<String>? responses,
+    int? score,
+  }) async {
     try {
+      final data = <String, dynamic>{
+        'questionId': questionId,
+        'response': response,
+        'userId': userId,
+        'question': question,
+        'submissionId': submissionId,
+        'timestamp': DateTime.now().toIso8601String(),
+      };
+
+      // Add optional fields if provided
+      if (responses != null && responses.isNotEmpty) {
+        data['responses'] = responses; // For multiple choice questions
+      }
+      if (score != null) {
+        data['score'] = score; // For questions with scoring
+      }
+
       await databases.createDocument(
         databaseId: AppwriteConstants.DATABASE_ID,
         collectionId: AppwriteConstants.SURVEY_RESPONSES_COLLECTION_ID,
         documentId: ID.unique(),
-        data: {
-          'questionId': questionId,
-          'response': response,
-          'userId': userId,
-          'question': question,
-          'submissionId': submissionId,
-          'timestamp': DateTime.now().toIso8601String(),
-        },
+        data: data,
       );
-      _log.info('Survey response submitted for submission: $submissionId');
+      _log.info(
+        'Survey response submitted for submission: $submissionId (score: $score)',
+      );
     } catch (e) {
       _log.severe('Error submitting survey response: $e');
       rethrow;
@@ -293,6 +384,7 @@ class AppwriteService {
           'question': data['question'] ?? '',
           'timestamp': data['timestamp'] ?? DateTime.now().toIso8601String(),
           'submissionId': submissionId,
+          'score': data['score'], // Include score field
         };
 
         if (!submissionGroups.containsKey(submissionId)) {
