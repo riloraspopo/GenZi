@@ -116,7 +116,7 @@ class SurveyHistoryPageState extends State<SurveyHistoryPage> {
                   final totalScore = _getTotalScore(responses);
                   final statusInfo = _getStatusInfo(totalScore);
                   final hasScore = responses.any((r) => r['score'] != null);
-                  
+
                   return Card(
                     margin: const EdgeInsets.only(bottom: 12.0),
                     elevation: 2,
@@ -141,7 +141,9 @@ class SurveyHistoryPageState extends State<SurveyHistoryPage> {
                                         ),
                                         decoration: BoxDecoration(
                                           color: statusInfo['color'],
-                                          borderRadius: BorderRadius.circular(12),
+                                          borderRadius: BorderRadius.circular(
+                                            12,
+                                          ),
                                         ),
                                         child: Row(
                                           mainAxisSize: MainAxisSize.min,
@@ -204,24 +206,38 @@ class SurveyHistoryPageState extends State<SurveyHistoryPage> {
                                                     ),
                                                   ),
                                                 ),
-                                                if (response['score'] != null) ...[
+                                                if (response['score'] !=
+                                                    null) ...[
                                                   const SizedBox(width: 8),
                                                   Container(
-                                                    padding: const EdgeInsets.symmetric(
-                                                      horizontal: 8,
-                                                      vertical: 4,
-                                                    ),
+                                                    padding:
+                                                        const EdgeInsets.symmetric(
+                                                          horizontal: 8,
+                                                          vertical: 4,
+                                                        ),
                                                     decoration: BoxDecoration(
-                                                      color: response['score'] == 0
-                                                          ? Colors.green.shade100
-                                                          : response['score'] <= 3
-                                                          ? Colors.orange.shade100
+                                                      color:
+                                                          response['score'] == 0
+                                                          ? Colors
+                                                                .green
+                                                                .shade100
+                                                          : response['score'] <=
+                                                                3
+                                                          ? Colors
+                                                                .orange
+                                                                .shade100
                                                           : Colors.red.shade100,
-                                                      borderRadius: BorderRadius.circular(10),
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                            10,
+                                                          ),
                                                       border: Border.all(
-                                                        color: response['score'] == 0
+                                                        color:
+                                                            response['score'] ==
+                                                                0
                                                             ? Colors.green
-                                                            : response['score'] <= 3
+                                                            : response['score'] <=
+                                                                  3
                                                             ? Colors.orange
                                                             : Colors.red,
                                                       ),
@@ -230,12 +246,22 @@ class SurveyHistoryPageState extends State<SurveyHistoryPage> {
                                                       '${response['score']} poin',
                                                       style: TextStyle(
                                                         fontSize: 11,
-                                                        fontWeight: FontWeight.bold,
-                                                        color: response['score'] == 0
-                                                            ? Colors.green.shade700
-                                                            : response['score'] <= 3
-                                                            ? Colors.orange.shade700
-                                                            : Colors.red.shade700,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                        color:
+                                                            response['score'] ==
+                                                                0
+                                                            ? Colors
+                                                                  .green
+                                                                  .shade700
+                                                            : response['score'] <=
+                                                                  3
+                                                            ? Colors
+                                                                  .orange
+                                                                  .shade700
+                                                            : Colors
+                                                                  .red
+                                                                  .shade700,
                                                       ),
                                                     ),
                                                   ),
@@ -305,14 +331,20 @@ class SurveyHistoryPageState extends State<SurveyHistoryPage> {
                               width: 48,
                               height: 48,
                               decoration: BoxDecoration(
-                                color: hasScore 
-                                  ? statusInfo['bgColor']
-                                  : Theme.of(context).primaryColor.withAlpha((0.1 * 255).round()),
+                                color: hasScore
+                                    ? statusInfo['bgColor']
+                                    : Theme.of(context).primaryColor.withAlpha(
+                                        (0.1 * 255).round(),
+                                      ),
                                 borderRadius: BorderRadius.circular(10),
                               ),
                               child: Icon(
-                                hasScore ? statusInfo['icon'] : Icons.assignment_outlined,
-                                color: hasScore ? statusInfo['color'] : Theme.of(context).primaryColor,
+                                hasScore
+                                    ? statusInfo['icon']
+                                    : Icons.assignment_outlined,
+                                color: hasScore
+                                    ? statusInfo['color']
+                                    : Theme.of(context).primaryColor,
                                 size: 28,
                               ),
                             ),
@@ -339,7 +371,9 @@ class SurveyHistoryPageState extends State<SurveyHistoryPage> {
                                           ),
                                           decoration: BoxDecoration(
                                             color: statusInfo['color'],
-                                            borderRadius: BorderRadius.circular(12),
+                                            borderRadius: BorderRadius.circular(
+                                              12,
+                                            ),
                                           ),
                                           child: Row(
                                             mainAxisSize: MainAxisSize.min,
@@ -369,7 +403,9 @@ class SurveyHistoryPageState extends State<SurveyHistoryPage> {
                                           ),
                                           decoration: BoxDecoration(
                                             color: Colors.grey.shade200,
-                                            borderRadius: BorderRadius.circular(12),
+                                            borderRadius: BorderRadius.circular(
+                                              12,
+                                            ),
                                           ),
                                           child: Text(
                                             'Skor: $totalScore',
