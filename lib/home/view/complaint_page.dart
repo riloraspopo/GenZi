@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:flutter/foundation.dart' show kIsWeb, kDebugMode;
 import 'package:image_picker/image_picker.dart';
 import 'package:myapp/constant.dart';
 import 'package:myapp/services/appwrite_service.dart';
@@ -58,7 +58,7 @@ class ComplaintPageState extends State<ComplaintPage> {
 
       return result != null ? File(result.path) : null;
     } catch (e) {
-      debugPrint('Error compressing image: $e');
+      if (kDebugMode) debugPrint('Error compressing image: $e');
       return null;
     }
   }

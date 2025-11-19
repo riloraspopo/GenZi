@@ -110,8 +110,9 @@ class DataProvider {
           )
           .toList();
     } catch (e) {
-      // ignore: avoid_print
-      print('Error getting PDF resources: $e');
+      if (kDebugMode) {
+        print('Error getting PDF resources: $e');
+      }
       return [];
     }
   }

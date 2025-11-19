@@ -1,4 +1,5 @@
 import 'package:appwrite/appwrite.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:myapp/constant.dart';
 import 'package:myapp/services/appwrite_service.dart';
@@ -15,7 +16,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   PWAInstall().setup(
     installCallback: () {
-      debugPrint('APP INSTALLED!');
+      if (kDebugMode) debugPrint('APP INSTALLED!');
     },
   );
   await AppwriteService.init();

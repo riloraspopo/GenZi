@@ -214,7 +214,6 @@ class AppwriteService {
       ];
 
       for (var question in testQuestions) {
-        print(question);
         await databases.createDocument(
           databaseId: AppwriteConstants.DATABASE_ID,
           collectionId: AppwriteConstants.SURVEY_COLLECTION_ID,

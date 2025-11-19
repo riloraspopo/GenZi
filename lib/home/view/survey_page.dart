@@ -336,7 +336,7 @@ class SurveyPageState extends State<SurveyPage> {
             color: isHighlighted
                 ? Colors.red
                 : isUnanswered
-                ? Colors.red.withOpacity(0.3)
+                ? Colors.red.withAlpha((0.3 * 255).toInt())
                 : Colors.transparent,
             width: isHighlighted ? 3 : 1,
           ),
@@ -711,7 +711,7 @@ class SurveyPageState extends State<SurveyPage> {
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: bgColor.withOpacity(0.3),
+            color: bgColor.withAlpha((0.3 * 255).toInt()),
             blurRadius: 8,
             offset: const Offset(0, 4),
           ),
@@ -762,7 +762,7 @@ class SurveyPageState extends State<SurveyPage> {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.2),
+              color: Colors.white.withAlpha((0.2 * 255).toInt()),
               borderRadius: BorderRadius.circular(20),
             ),
             child: Column(
